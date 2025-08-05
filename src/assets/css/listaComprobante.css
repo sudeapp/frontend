@@ -1,0 +1,326 @@
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px !important;
+    font-size: 12px;
+  }
+
+  .consultar-button {
+    background-color: #002A26 !important;
+    color: #DEB71D !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .consultar-button:hover {
+    background-color: var(--button-hover-bg);
+  }
+
+  @media print {
+    body, html {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+
+    .print{
+        display: block !important;
+    }
+    
+    .comprobante-container {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+    }
+    table {
+      page-break-inside: auto !important;
+      break-inside: auto !important;
+    }
+    tr {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    td, th {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    /* Mejoras adicionales */
+    table {
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+      font-size: 7pt !important; /* Tamaño de fuente reducido */
+    }
+    td, th {
+      padding: 3px 4px !important; /* Padding reducido */
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      line-height: 1.2 !important; /* Altura de línea reducida */
+    }
+  }
+
+  /* Sección de Búsqueda/Filtros */
+  .search-filters-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    border-bottom: 1px solid var(--light-gray-border);
+    align-items: flex-end; 
+    justify-content: end;
+  }
+
+  
+  .form-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark-gray-text);
+  }
+  
+  .input-with-icon {
+    display: flex;
+    align-items: center;
+    border: 0.5px solid #DDD;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--white);
+    position: relative; /* Necesario para posicionar el icono */
+    padding-right: 10px;
+  }
+  
+  .input-with-icon select{
+    border: none;
+    padding: 13px;
+    flex-grow: 1;
+    outline: none;
+    /*font-size: 12px;*/
+    color: #6c757d;
+  }
+
+  .input-with-icon input {
+    border: none;
+    padding: 10px;
+    flex-grow: 1;
+    outline: none;
+    font-size: 12px;
+  }
+  
+  .input-with-icon input::placeholder {
+    color: #a0a0a0;
+  }
+  
+  .input-with-icon .icon-calendar,
+  .search-icon-button {
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    color: #666;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .input-with-icon .icon-calendar {
+    border-left: 1px solid var(--light-gray-border); /* Separador para el icono de calendario */
+    cursor: default; /* El calendario es solo visual aquí, no un botón activo */
+  }
+  
+  /* Contenedor del DatePicker */
+.input-with-icon .icon-calendar {
+  position: absolute;
+  right: 10px; /* Posición desde la derecha */
+  top: 50%; /* Centrado verticalmente */
+  transform: translateY(-50%); /* Centrado preciso */
+  pointer-events: none; /* Permite hacer clic a través del icono */
+  color: #666;
+  font-size: 16px;
+  z-index: 2; /* Asegura que esté sobre el input */
+  /* Eliminado el transform: translateX(250%) que causaba el problema */
+}
+
+/* Asegurar que el input tenga espacio para el icono */
+.input-with-icon .react-datepicker-wrapper,
+.input-with-icon .react-datepicker__input-container {
+  width: 100%; /* Ocupa todo el ancho */
+}
+
+.input-with-icon .react-datepicker__input-container input {
+  padding-right: 35px; /* Espacio para el icono a la derecha */
+  width: 100%;
+  border: none;
+  padding: 13px;
+  outline: none;
+  font-size: 12px;
+}
+
+/* Estilos para el wrapper del DatePicker */
+.date-picker-wrapper {
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+}
+
+  .search-icon-button {
+    /*border-left: 1px solid var(--light-gray-border);  Separador para el botón de búsqueda */
+    transition: background-color 0.2s ease;
+  }
+  
+  .search-icon-button:hover {
+    /*background-color: #f0f0f0;*/
+  }
+  
+  .consultar-button {
+    background-color: #002A26 !important;
+    color: #DEB71D !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .consultar-button:hover {
+    background-color: var(--button-hover-bg);
+  }
+
+    /* Estilos para el DatePicker */
+    .icon-calendar{
+      margin-left: 5px;
+      margin-right: 3px;
+    }
+      
+    .date-range-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 0.5px solid #DDD;
+      border-radius: 5px;
+      padding-right: 10px;
+    }
+  
+    .custom-datepicker-input {
+      width: 100%;
+      margin-left: 3px;
+      /* margin-right: 40px; */
+      padding: 12px 12px;
+      border: none;
+      border-radius: 0px;
+      font-size: 14px;
+      /*border-right: 1px solid #ced4da;*/
+    }
+  
+    .react-datepicker-wrapper {
+      /*width: 45%;*/
+    }
+  
+    .date-range-separator {
+      color: #6c757d;
+    }
+  
+    .react-datepicker {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.9rem;
+      border: 1px solid #aeaeae;
+      border-radius: 4px;
+    }
+  
+    .react-datepicker__header {
+      background-color: #f0f2f5;
+      border-bottom: 1px solid #aeaeae;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      padding: 8px 0;
+    }
+  
+    .react-datepicker__current-month {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+  
+    .react-datepicker__day-names {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+  
+    .react-datepicker__day-name {
+      color: #495057;
+      font-weight: 500;
+      width: 28px;
+      line-height: 28px;
+    }
+  
+    .react-datepicker__day {
+      width: 28px;
+      line-height: 28px;
+      margin: 2px;
+      border-radius: 50%;
+    }
+  
+    .react-datepicker__day--selected {
+      background-color: #4c7bc2;
+      color: white;
+    }
+  
+    .react-datepicker__day--keyboard-selected {
+      background-color: #e6f0ff;
+      color: #333;
+    }
+  
+    .react-datepicker__day:hover {
+      background-color: #f0f0f0;
+      border-radius: 50%;
+    }
+  
+    .react-datepicker__day--today {
+      font-weight: bold;
+    }
+  
+    .react-datepicker__close-icon {
+      &::after {
+        background-color: #4c7bc2;
+        color: white;
+        font-size: 12px;
+        border-radius: 50%;
+        height: 16px;
+        width: 16px;
+        padding: 0;
+        line-height: 16px;
+      }
+    }
+  
+    /* Ajustes para el calendario en español */
+    .react-datepicker__month-dropdown,
+    .react-datepicker__year-dropdown {
+      background: white;
+      border: 1px solid #aeaeae;
+      border-radius: 4px;
+      padding: 8px;
+    }

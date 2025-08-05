@@ -1,0 +1,87 @@
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px !important;
+    font-size: 12px;
+  }
+
+  .consultar-button {
+    background-color: #002A26 !important;
+    color: #DEB71D !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .consultar-button:hover {
+    background-color: var(--button-hover-bg);
+  }
+
+  @media print {
+    body, html {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+
+    .print{
+        display: block !important;
+    }
+    
+    .comprobante-container {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+    }
+    table {
+      page-break-inside: auto !important;
+      break-inside: auto !important;
+    }
+    tr {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    td, th {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    /* Mejoras adicionales */
+    table {
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+      font-size: 7pt !important; /* Tamaño de fuente reducido */
+    }
+    td, th {
+      padding: 3px 4px !important; /* Padding reducido */
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      line-height: 1.2 !important; /* Altura de línea reducida */
+    }
+  }
+
+  /* Sección de Búsqueda/Filtros */
+  .search-filters-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    border-bottom: 1px solid var(--light-gray-border);
+    align-items: flex-end; /* Alinea los elementos en la parte inferior */
+  }

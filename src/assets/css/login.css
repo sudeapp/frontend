@@ -1,0 +1,191 @@
+        .login-body {
+            background-color: #f6f6f6 !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+		.login-input{
+			border-radius: 0 !important;
+			background: #f8f9fa !important;
+			font-size: 0.9rem !important;
+            height: 40px !important;
+		}
+		
+        .login-container {
+            background: #fff;
+            /*padding: 2rem;
+            border-radius: 8px;*/
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /*width: 100%;*/
+            max-width: 840px;
+            display: flex;
+            align-items: center;
+        }
+
+		.logo-main-container {
+			display: flex;
+			justify-content: center; 
+			align-items: center;    
+		}
+		
+        .logo-container {
+			height: 600px;
+			background: #002A26;
+			flex: 1;
+			padding: 1rem;
+			/* Nuevas propiedades añadidas: */
+			display: flex;
+			justify-content: center; /* Centra horizontalmente */
+			align-items: center;     /* Centra verticalmente */
+		}
+
+		.logo-container img {
+			max-width: 100%;
+			max-height: 100%; /* Asegura que la imagen no sobresalga */
+			height: auto;
+			object-fit: contain; /* Opcional: mantiene la proporción */
+		}
+
+		.form-container {
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+            .form-container h2 {
+                /*margin-bottom: 1.5rem;*/
+				margin-top:2.3rem;
+                font-size: 1.3rem;
+                text-align: center;
+                color: #333;
+            }
+			
+			.form-container p {
+				margin-top: 0;
+				margin-bottom: 1rem !important;
+				font-size: 0.8rem;
+				text-align: center;
+			}
+		
+		.form-label{
+			font-size: 0.9rem;
+		}
+		
+        .form-container {
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+            .form-container h2 {
+                /*margin-bottom: 1.5rem;*/
+                font-size: 1.5rem;
+                text-align: center;
+                color: #333;
+            }
+
+        .form-control {
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .btn-meli {
+            background: #FFF !important;
+            border: 0.8px solid #dee2e6 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .create-account-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+            .create-account-link a {
+                color: #2a3747;
+                text-decoration: none;
+                font-font-family: sans-serif;
+            }
+
+                .create-account-link a:hover {
+                    text-decoration: underline;
+                }
+
+        .input-group .form-control.login-input {
+			border-right: none;
+		}
+
+		.input-group-text {
+			background: #efefef;
+			border-left: none;
+			/* width: 30px !important; */
+			/* float: right; */
+			flex: none !important;
+			padding-right: 25px;
+			border-radius: 0 !important;
+			padding-top: 8px;
+            height: fit-content;
+            height: 40px !important;
+		}
+
+        .input-icon{
+            color: #DEB71D !important;
+        }
+
+        .login-form{
+            padding: 2.3rem;
+            padding-top: 0.5rem;
+        }
+
+        .login-button{
+            background: #DEB71D !important;
+            border: none !important;
+            border-radius:0 !important;
+            font-size: 0.9rem !important;
+        }
+
+        .button-text{
+            color: #2a3747;
+            font-family: sans-serif;
+            font-weight: bold;
+        }
+
+        
+        @media only screen and (max-width: 767px) {
+            .login-container {
+                display: block !important;
+                padding: 0.5rem;
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+
+            .login-form {
+                padding: 0px;
+                padding-top: 20px;
+            }
+
+            .logo-container {
+                margin: auto;
+            }
+
+            .profile-circle {
+                width: 50px;
+                height: 50px;
+            }
+
+            .profile-name {
+                font-size: 1rem;
+            }
+
+            .logo-container img {
+                width: 60%;
+            }
+        }
+

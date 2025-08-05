@@ -1,0 +1,565 @@
+/* Colores y fuentes base */
+:root {
+    --primary-green: #1a4d44; /* Verde oscuro para encabezados y botones */
+    --light-green-bg: #e6ffe6; /* Verde claro para filas pares */
+    --white: #ffffff;
+    --dark-gray-text: #333333;
+    --light-gray-border: #cccccc;
+    --button-hover-bg: #2a6a5f; /* Hover para botones */
+    --input-border-focus: #4CAF50; /* Verde para enfoque de input */
+  }
+  
+ /* body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: var(--dark-gray-text);
+  }
+  */
+  /* Mismo css*/  
+  .consulta-comprobantes-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    /*background-color: #f0f2f5;*/
+    color: #333;
+    background-color: #ffffff;
+
+    .mini-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin: 0 auto;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .regresar-button {
+        background: none;
+        border: none;
+        color: #007bff;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-right: 40px;
+
+        .icon {
+            font-size: 20px;
+        }
+    }
+
+    .titulo {
+        font-size: 18px;
+        color: var(--bs-gray);
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .form-section {
+      background-color: white;
+      padding: 20px 20px 0px 20px;
+      /*border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;*/
+
+      .form-row {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 15px;
+          align-items: flex-end;
+
+          &.top-row {
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 25px;
+          }
+      }
+
+      .form-group {
+          display: flex;
+          flex-direction: column;
+
+          label {
+              color: #555;
+              font-size: 0.9rem;
+              margin-bottom: 5px;
+          }
+
+          input[type="date"],
+          input[type="text"],
+          input[type="number"],
+          textarea {
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              font-size: 12px;
+              transition: border-color 0.2s;
+
+              &:focus {
+                  border-color: #007bff;
+                  outline: none;
+              }
+          }
+
+          &.full-width {
+              width: 100%;
+          }
+
+          .char-count {
+              align-self: flex-end;
+              font-size: 12px;
+              color: #777;
+              margin-top: 5px;
+          }
+      }
+    }
+  /*fin Mismo css*/  
+  .arrow-icon {
+    margin-right: 5px;
+  }
+  
+  .header-title {
+    flex-grow: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 20px;
+    /*font-weight: 600;*/
+  }
+  
+  /* Sección de Búsqueda/Filtros */
+  .search-filters-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    border-bottom: 1px solid var(--light-gray-border);
+    align-items: flex-end; /* Alinea los elementos en la parte inferior */
+  }
+  
+  .form-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark-gray-text);
+  }
+  
+  .input-with-icon {
+    display: flex;
+    align-items: center;
+    border: 0.5px solid #DDD;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--white);
+    position: relative; /* Necesario para posicionar el icono */
+  }
+  
+  .input-with-icon select{
+    border: none;
+    padding: 13px;
+    flex-grow: 1;
+    outline: none;
+    /*font-size: 12px;*/
+    color: #6c757d;
+  }
+
+  .input-with-icon input {
+    border: none;
+    padding: 10px;
+    flex-grow: 1;
+    outline: none;
+    font-size: 12px;
+  }
+  
+  .input-with-icon input::placeholder {
+    color: #a0a0a0;
+  }
+  
+  .input-with-icon .icon-calendar,
+  .search-icon-button {
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    color: #666;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .input-with-icon .icon-calendar {
+    border-left: 1px solid var(--light-gray-border); /* Separador para el icono de calendario */
+    cursor: default; /* El calendario es solo visual aquí, no un botón activo */
+  }
+  
+  /* Contenedor del DatePicker */
+.input-with-icon .icon-calendar {
+  position: absolute;
+  right: 10px; /* Posición desde la derecha */
+  top: 50%; /* Centrado verticalmente */
+  transform: translateY(-50%); /* Centrado preciso */
+  pointer-events: none; /* Permite hacer clic a través del icono */
+  color: #666;
+  font-size: 16px;
+  z-index: 2; /* Asegura que esté sobre el input */
+  /* Eliminado el transform: translateX(250%) que causaba el problema */
+}
+
+/* Asegurar que el input tenga espacio para el icono */
+.input-with-icon .react-datepicker-wrapper,
+.input-with-icon .react-datepicker__input-container {
+  width: 100%; /* Ocupa todo el ancho */
+}
+
+.input-with-icon .react-datepicker__input-container input {
+  padding-right: 35px; /* Espacio para el icono a la derecha */
+  width: 100%;
+  border: none;
+  padding: 13px;
+  outline: none;
+  font-size: 12px;
+}
+
+/* Estilos para el wrapper del DatePicker */
+.date-picker-wrapper {
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+}
+
+  .search-icon-button {
+    /*border-left: 1px solid var(--light-gray-border);  Separador para el botón de búsqueda */
+    transition: background-color 0.2s ease;
+  }
+  
+  .search-icon-button:hover {
+    /*background-color: #f0f0f0;*/
+  }
+  
+  .consultar-button {
+    background-color: #002A26 !important;
+    color: #DEB71D !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .consultar-button:hover {
+    background-color: var(--button-hover-bg);
+  }
+  
+  /* Sección de la Tabla */
+  .table-section {
+    padding-top: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
+  }
+  
+  table thead {
+    background-color: #20373e;
+    color: var(--white);
+  }
+  
+  table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 100;
+  }
+  
+  table tbody tr {
+    border-bottom: 1px solid #eeeeee;
+  }
+  
+  table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Filas pares con fondo verde claro */
+  }
+  
+  table tbody tr:hover {
+    background-color: #e0f0e0; /* Un verde un poco más oscuro al pasar el ratón */
+  }
+  
+  table td {
+    /*padding: 12px 15px;*/
+    font-size: 14px;
+    color: var(--dark-gray-text);
+  }
+  
+  .eye-icon-cell {
+    text-align: center;
+  }
+  
+  .eye-icon {
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    vertical-align: middle; /* Alinea el ojo con el texto si hubiera */
+  }
+  
+  /* Filas vacías para mantener la altura */
+  .empty-row td {
+    height: 40px; /* Altura de las filas vacías */
+  }
+  
+  /* Pie de Tabla / Paginación */
+  .table-footer {
+    display: flex;
+    justify-content: flex-end; /* Alinea a la derecha */
+    padding: 15px 20px;
+    border-top: 1px solid var(--light-gray-border);
+    background-color: #f9f9f9;
+    font-size: 14px;
+  }
+  
+  .pagination span {
+    margin: 0 5px;
+    color: #666;
+  }
+  
+  .pagination .arrow-icon {
+    font-weight: bold;
+  }
+
+    /* Estilos para el spinner */
+  .spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Deshabilitar botón durante carga */
+  .consultar-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  td.text-right, th.text-right {
+    text-align: right;
+  }
+
+  /* Estilos para el DatePicker */
+  .icon-calendar{
+    margin-left: 5px;
+    margin-right: 3px;
+  }
+    
+  .date-range-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0.5px solid #DDD;
+    border-radius: 5px;
+    padding-right: 10px;
+  }
+
+  .custom-datepicker-input {
+    width: 100%;
+    margin-left: 3px;
+    /* margin-right: 40px; */
+    padding: 12px 12px;
+    border: none;
+    border-radius: 0px;
+    font-size: 14px;
+    /*border-right: 1px solid #ced4da;*/
+  }
+
+  .react-datepicker-wrapper {
+    /*width: 45%;*/
+  }
+
+  .date-range-separator {
+    color: #6c757d;
+  }
+
+  .react-datepicker {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    border: 1px solid #aeaeae;
+    border-radius: 4px;
+  }
+
+  .react-datepicker__header {
+    background-color: #f0f2f5;
+    border-bottom: 1px solid #aeaeae;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    padding: 8px 0;
+  }
+
+  .react-datepicker__current-month {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .react-datepicker__day-names {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 8px;
+    padding: 0 4px;
+  }
+
+  .react-datepicker__day-name {
+    color: #495057;
+    font-weight: 500;
+    width: 28px;
+    line-height: 28px;
+  }
+
+  .react-datepicker__day {
+    width: 28px;
+    line-height: 28px;
+    margin: 2px;
+    border-radius: 50%;
+  }
+
+  .react-datepicker__day--selected {
+    background-color: #4c7bc2;
+    color: white;
+  }
+
+  .react-datepicker__day--keyboard-selected {
+    background-color: #e6f0ff;
+    color: #333;
+  }
+
+  .react-datepicker__day:hover {
+    background-color: #f0f0f0;
+    border-radius: 50%;
+  }
+
+  .react-datepicker__day--today {
+    font-weight: bold;
+  }
+
+  .react-datepicker__close-icon {
+    &::after {
+      background-color: #4c7bc2;
+      color: white;
+      font-size: 12px;
+      border-radius: 50%;
+      height: 16px;
+      width: 16px;
+      padding: 0;
+      line-height: 16px;
+    }
+  }
+
+  /* Ajustes para el calendario en español */
+  .react-datepicker__month-dropdown,
+  .react-datepicker__year-dropdown {
+    background: white;
+    border: 1px solid #aeaeae;
+    border-radius: 4px;
+    padding: 8px;
+  }
+
+  .cargado{
+    background: #DDD;
+  }
+
+  .verificado{
+    background: #ffe69c
+    ;
+  }
+
+  .actualizado{
+    background: #75d4b8;
+  }
+
+  .cerrado{
+    background: #a6e2d0;
+  }
+
+  .custom-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+  }
+
+  .save-button {
+    /*background-color: #28a745;
+    color: white;*/
+    background-color: #002A26 !important;
+    color: #DEB71D !important;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 80px;
+    cursor: pointer;
+    /*font-size: 16px;*/
+    font-weight: 100 !important;
+    margin-right: 14px;
+  }
+
+  .review-button {
+    background-color: #DEB71D;
+    color: #002A26;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .acciones-top{
+    margin-top: 15px;
+    justify-content: flex-end;
+    display: flex
+  }
+
+  /* Estilos para botones deshabilitados */
+.save-button:disabled,
+.review-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilos para botones habilitados */
+.save-button:not(:disabled) {
+  background-color: #002A26 !important;
+  color: #DEB71D !important;
+}
+
+.review-button:not(:disabled) {
+  background-color: #DEB71D;
+  color: #002A26;
+}
+}
