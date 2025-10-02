@@ -1,229 +1,219 @@
 import React, { useEffect,useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboardList, faSearch, faListAlt, faShieldAlt, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faClipboardList, faSearch, faListAlt, faShieldAlt, faEye,faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { FaBars} from 'react-icons/fa';
+import { show_alerta,show_alerta2 } from '../functions';
+import axios from 'axios';
+import config from '../config';
+import Cookies from 'universal-cookie';
+import '../assets/css/moduloContabilidad.css'; 
 
-const ModuloContabilidad = ({ setCurrentComponent }) => {
-  const css = `
-  .accounting-module {
-    font-family: sans-serif;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    }
-        
-    .actions-bar {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    }
-    
-    .action-card {
-      background-color: #e8f5e9; /* Light green background /
-      color: #388e3c; / Darker green text */
-      padding: 30px 20px;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      border: 1px solid #c8e6c9;
-    }   
-    
-    .action-icon {
-    font-size: 1.5em;
-    margin-bottom: 8px;
-    }
-    
-    .table-header-section {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    }
-    
-    .maintenance-title {
-    color: #333;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    }
-    
-    .radio-button {
-    width: 12px;
-    height: 12px;
-    border: 1px solid #333;
-    border-radius: 50%;
-    margin-right: 8px;
-    }
-    
-    .data-table-container {
-    overflow-x: auto;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    }
-    
-    .data-table th, .data-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    }
-    
-    .data-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    }
-    
-    .data-table tbody tr:last-child td {
-    border-bottom: none;
-    }
-    
-    .status-pending {
-    background-color: #fff8e1; /* Light yellow /
-    color: #f9a825; / Amber */
-    padding: 5px 10px;
-    border-radius: 5px;
-    /*display: inline-block;*/
-    }
-    
-    .eye-icon {
-    color: #777;
-    cursor: pointer;
-    }
-`;
+const Informe = ({ setCurrentComponent,setComprobanteSeleccionado }) => {
+ 
+  const cookies = new Cookies();
+  const baseUrl = config.API_BASE_URL;
+  const [comprobantes, setComprobantes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(cookies.get('idUsuario'));
+  const [idCaho, setIdCaho] = useState(cookies.get('id_caho'));
+  const [token, setToken] = useState(cookies.get('token'));
+  const [isShowBtnComprobante, setIsShowBtnComprobante] = useState(false);
+  const [isShowBtnAprobacion, setIsShowBtnAprobacion] = useState(false);
+  const [isShowBtnCatalogo, setIsShowBtnCatalogo] = useState(false);
 
-    const handleChangeComponent = (currents) => {
-      setCurrentComponent(currents);
-    };
+  const handleChangeComponent = (currents) => {
+    setCurrentComponent(currents);
+  };
+
+  useEffect(() => {
+    if(cookies.get('permisologia') == 2){
+      setIsShowBtnComprobante(true);
+      setIsShowBtnAprobacion(true);
+      setIsShowBtnCatalogo(true);
+    }
+
+    if(cookies.get('permisologia') == 4){
+      setIsShowBtnComprobante(true);
+    }
+
+    if(cookies.get('permisologia') == 5){
+      setIsShowBtnComprobante(true);
+      setIsShowBtnAprobacion(true);
+      setIsShowBtnCatalogo(true);
+    }
+
+    handleConsultar();
+  }, []);
+
+   // Función para formatear fechas
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
+  // Función para formatear moneda
+  const formatCurrency = (value) => {
+    const number = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(number)) return '0,00';
+    
+    const fixedValue = number.toFixed(2);
+    const [integerPart, decimalPart] = fixedValue.split('.');
+    
+    return integerPart
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      + ',' + decimalPart;
+  };
+
+  const handleConsultar = async () => {
+    console.log("idCaho",idCaho)
+    try {
+      
+      const response = await axios.get(`${baseUrl}/api/comprobante/ultimos-comprobantes`, {
+        headers: token ? { Authorization: `${token}` } : {},
+        params : {
+          idCaho:idCaho,
+          idUsuario:userId
+        }
+      });
+      const data = response.data;
+
+      if (!data) {
+        show_alerta(response.data?.message || "Error al realizar consulta", "error");
+      }
+      console.log("data:------",data);
+      let fechaFormateada = 'N/A';
+      // Mapear los datos de la API al formato de la tabla
+      const comprobantesMapeados = data.map(comprobante => ({
+        id:comprobante.id,
+        secuencia: comprobante.id.toString().padStart(6, '0'),
+        fechaValor: formatDate(comprobante.fechaCbte),
+        usuario: comprobante.usuarioCreacion?.nombre || 'N/A',
+        debitos: formatCurrency(comprobante.bsMontoDebito),
+        creditos: formatCurrency(comprobante.bsMontoCredito),
+        comprobante: comprobante.nroCbte,
+        estatusCbte: comprobante.estatusCbte,
+        fechaCbte:comprobante.fechaCbte,
+        idCaho:comprobante.idCaho,
+        nroCbte:comprobante.nroCbte,
+        comprobanteDet: comprobante.comprobanteDet,
+        isConsulting:false
+      }));
+      setComprobantes(comprobantesMapeados);
+      
+    } catch (err) {
+      console.error('Error al consultar comprobantes:', err);
+      setError('Error al cargar los datos. Por favor intente nuevamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenDetail = (comprobante) => {
+    console.log("comprobante:",comprobante)
+    
+    setComprobanteSeleccionado(comprobante);
+    setCurrentComponent('detalleComprobantes');
+  };
 
   return (
-    <>
-    <style>{css}</style>
-    <h2 className="module-title">Módulo de Contabilidad</h2>
+    <div className="modulo-contabilidad-container">
+      <h2 className="dashboard-title">
+          <FontAwesomeIcon icon={faChartPie} className="dashboard-title-icon" />
+          Módulo de Contabilidad
+      </h2>
       <div className="actions-bar">
-        <div className="action-card" onClick={() => handleChangeComponent('registroComprobantes')}>
-          <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
-          <span>Carga de Comprobantes</span>
-          
-        </div>
+        {isShowBtnComprobante ?
+          <div className="action-card" onClick={() => handleChangeComponent('registroComprobantes')}>
+            <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
+            <span>Carga de Comprobantes</span>
+          </div>
+          : ''
+        }
+        
         <div className="action-card" onClick={() => handleChangeComponent('consultaComprobantes')}>
           <FontAwesomeIcon icon={faSearch} className="action-icon" />
           <span>Consulta de Comprobantes</span>
         </div>
-        <div className="action-card" onClick={() => handleChangeComponent('consultaComprobanteAprobacion')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span>Listado de Aprobación</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('consultaVpc')}>
-          <FontAwesomeIcon icon={faShieldAlt} className="action-icon" />
-          <span>Parámetros Contables</span>
-        </div>
+
+        {isShowBtnAprobacion?
+          <div className="action-card" onClick={() => handleChangeComponent('consultaComprobanteAprobacion')}>
+            <FontAwesomeIcon icon={faListAlt} className="action-icon" />
+            <span>Aprobación y Actualización</span>
+          </div>
+          : ''
+        }
+        
+        {isShowBtnCatalogo ?
+          <div className="action-card" onClick={() => handleChangeComponent('catalogoCuentaCaja')}>
+            <FontAwesomeIcon icon={faListAlt} className="action-icon" />
+            <span>Catálogo de Cuentas</span>
+          </div>
+          : ''
+        }
+        
       </div>
 
-  <div className="table-header-section">
-    <div className="maintenance-title">
-      <span className="radio-button"></span>
-      Mantenimiento de Comprobantes
+      {/* Sección de la Tabla */}
+      <section className="table-section">
+        <table>
+          <thead>
+            <tr>
+              <th>Secuencia</th>
+              <th>Fecha Valor</th>
+              <th>Usuario</th>
+              <th style={{textAlign: 'center'}}>Débitos</th>
+              <th style={{textAlign: 'center'}}>Créditos</th>
+              <th style={{textAlign: 'center'}}>Comprobante</th>
+              <th>Estatus</th>
+              <th></th> {/* Columna para el icono de ojo */}
+            </tr>
+          </thead>
+          <tbody>
+            {comprobantes.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.fechaValor}</td>
+                <td>{item.usuario}</td>
+                <td className="text-right">{item.debitos}</td>
+                <td className="text-right">{item.creditos}</td>
+                <td style={{textAlign: 'center'}}>{item.comprobante}</td>
+                <td className={`status-button 
+                                ${item.estatusCbte == 0 ? 'cargado' : ''} 
+                                ${item.estatusCbte == 1 ? 'verificado' : ''} 
+                                ${item.estatusCbte == 2 ? 'aprobado' : ''}
+                                ${item.estatusCbte == 3 ? 'cerrado' : ''}
+                                `}>
+                  {item.estatusCbte == 0 ? 'Cargado' : ''}
+                  {item.estatusCbte == 1 ? 'Verificado' : ''}
+                  {item.estatusCbte == 2 ? 'Actualizado' : ''}
+                  {item.estatusCbte == 3 ? 'Cerrado' : ''}
+                </td>
+                <td className="eye-icon-cell">
+                  <span className="eye-icon" onClick={() => handleOpenDetail(item)}>👁️</span>
+                </td>
+              </tr>
+            ))}
+            {/* Filas vacías para mantener la altura y el diseño si hay pocos datos */}
+            {Array.from({ length: Math.max(0, 10 - comprobantes.length) }).map((_, i) => (
+              <tr key={`empty-${i}`} className="empty-row">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
     </div>
-  </div>
-
-  <div className="data-table-container">
-    <table className="data-table">
-      <thead>
-        <tr>
-          <th>Secuencia</th>
-          <th>Fecha Valor</th>
-          <th>Débitos</th>
-          <th>Créditos</th>
-          <th>Estatus</th>
-          <th></th> {/* For the eye icon */}
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>000001</td>
-          <td>000000</td>
-          <td>000000</td>
-          <td>000000</td>
-          <td className="status-pending">Pendiente Por Revisar</td>
-          <td><FontAwesomeIcon icon={faEye} className="eye-icon" /></td>
-        </tr>
-        {/* Add more rows here as needed */}
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-    </>
   )
 }
 
-export default ModuloContabilidad;
+export default Informe;

@@ -1,8 +1,19 @@
-.registro-usuario-container {
+.catalogo-cuenta-container {
   font-family: Arial, sans-serif;
+  padding: 20px;
   /*background-color: #f0f2f5;*/
   color: #333;
   background-color: #ffffff;
+
+  .custom-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    color: var(--bs-gray-700);
+  }
 
   .mini-spinner {
     width: 16px;
@@ -18,9 +29,7 @@
   .header {
       display: flex;
       align-items: center;
-      margin-bottom: 25px;
-      padding-bottom: 0.5rem;
-      padding-top: 1.5rem;
+      margin-bottom: 5px;
   }
 
   .regresar-button {
@@ -44,13 +53,11 @@
       color: var(--bs-gray);
       flex-grow: 1;
       text-align: center;
-      border-bottom: 1px solid #DDD;
-        padding-bottom: 1rem;
   }
 
   .form-section {
       background-color: white;
-      padding: 20px 20px 0px 20px;
+      padding: 0px 20px 0px 20px;
       /*border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       margin-bottom: 25px;*/
@@ -81,8 +88,6 @@
           input[type="date"],
           input[type="text"],
           input[type="number"],
-          input[type="password"],
-          input[type="email"],
           textarea {
               padding: 10px;
               border: 1px solid #ccc;
@@ -279,8 +284,8 @@
 
   .table-section {
       background-color: white;
-      /*border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+      /*border-radius: 8px;*/
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       overflow-x: auto;
       margin-bottom: 20px;
 
@@ -330,8 +335,8 @@
       align-items: center;
       padding: 15px;
       background-color: white;
-      /*border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+      /*border-radius: 8px;*/
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
       .pagination {
           font-size: 14px;
@@ -404,269 +409,5 @@
               width: 100%;
           }
       }
-  }
-
-
-  /* Estilos adicionales para el formulario de usuario */
-
-  .form-row {
-    margin-bottom: 20px;
-  }
-  
-   .form-group.full-width {
-    width: 100%;
-  }
-  
-   textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    resize: vertical;
-    min-height: 80px;
-  }
-  
-   .input-error {
-    border-color: #e74c3c !important;
-  }
-  
-  .error-message {
-    color: #e74c3c;
-    font-size: 12px;
-    margin-top: 5px;
-  }
-  
-  /* Estilos para la tabla de usuarios */
-  .table-section {
-    background-color: white;
-    border-radius: 4px;
-    /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
-    margin-top: 30px;
-    overflow-x: auto;
-    padding: 20px;
-  }
-  
-  .table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .table-header h3 {
-    margin: 0;
-    color: #002A26;
-    font-size: 18px;
-  }
-  
-  .table-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .export-excel-button {
-    background-color: transparent;
-    border: 1px solid #002A26;
-    color: #002A26;
-    border-radius: 4px;
-    padding: 8px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-  
-  .table-section table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table-section th,
-  .table-section td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-  }
-  
-  .table-section th {
-    background-color: #20373e;
-    color: white;
-    font-weight: normal;
-    text-transform: uppercase;
-  }
-  
-  .table-section tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .table-section tbody tr:hover {
-    background-color: #f0f8ff;
-  }
-  
-  .actions-cell {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .edit-button, .delete-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 5px;
-  }
-  
-  .edit-button {
-    color: #002A26;
-  }
-  
-  .delete-button {
-    color: #e74c3c;
-  }
-  
-  .no-data {
-    text-align: center;
-    padding: 20px;
-    color: #777;
-    font-style: italic;
-  }
-  
-  .table-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-  }
-  
-  .pagination {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .pagination-button {
-    background-color: #002A26;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  
-  /* Estilos para el spinner */
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    margin: 0 auto;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  .auxiliar{
-    width: 20% !important;
-  }
-
-  .session_form_1{
-    border-bottom: 0.5px solid #ddd;
-    padding-bottom: 2rem;
-    margin-bottom: 1.5rem !important;
-  }
-
-  /* Estilos para modo edición */
-.row-editing {
-    background-color: #fffde7 !important; /* Fondo amarillo claro */
-    border-left: 3px solid #ffc107; /* Borde izquierdo amarillo */
-  }
-  
-  .cancel-button {
-    background-color: #f5f5f5;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .cancel-button:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .cancel-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  /* Mensaje de edición */
-  .form-group.fecha-valor label {
-    font-size: 18px;
-    color: #002A26;
-  }
-
-  /* Estilos para el combo de roles */
- .roles-select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    min-height: 120px;
-  }
-  
-  .roles-select.input-error {
-    border-color: #ff4d4f;
-  }
-  
-  .roles-hint {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
-    font-style: italic;
-  }
-
-  .status-button{
-    color: rgb(25 135 84);
-    border: none;
-    border-radius: 10px;
-    background: none;
-  }
-
-  .estatus .inhabilitado {
-    color: var(--bs-gray-700) !important;
-    background: var(--swal2-validation-message-background);
-  }
-
-  .estatus .deshabilitado {
-    border-radius: 0px;
-    color: var(--bs-gray-700) !important;
-    background: var(--swal2-validation-message-background);
-  }
-
-  .status-button .inhabilitado {
-    color: var(--bs-gray-700) !important;
-    background: none;
-  }
-
-  .status-button .habilitado {
-    color: var(--bs-green);
-  }
-
-  .bloquear{
-    border:none !important;
-    background:none !important;
-    color: #D1D7DDFF
   }
 }

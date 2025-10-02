@@ -25,6 +25,7 @@ function CajaAhorro() {
         const [ultimoMesCerrado, setUltimoMesCerrado] = useState('');
         const [lapsoGenerado, setLapsoGenerado] = useState('');
         const [roles, setRoles] = useState('');
+        const [pplanContable, setPPlanContable] = useState('');
         const [lapsoCierre, setLapsoCierre] = useState('');
         const [categories, setCategories] = useState([]);
         const [allCategories, setAllCategories] = useState([]); // Todas las categorías
@@ -47,13 +48,24 @@ function CajaAhorro() {
         const [correoMaster_, setCorreoMaster_] = useState(false);
         const [correoConsejo_, setCorreoConsejo_] = useState(false);
         const [correoCumplimiento_, setCorreoCumplimiento_] = useState(false);
+        const [errorPasswordCum, setErrorPasswordCum] = useState(false);
+        const [errorPasswordCo, setErrorPasswordCo] = useState(false);
+        const [errorPasswordMa, setErrorPasswordMa] = useState(false);
+        const [msjPasswordCum, setMsjPasswordCum] = useState('');
+        const [msjPasswordCo, setMsjPasswordCo] = useState('');
+        const [msjPasswordMa, setMsjPasswordMa] = useState('');
         const [userId, setUserId] = useState(cookies.get('idUsuario')); 
         const [startDate, setStartDate] = useState(null);
         const [endDate, setEndDate] = useState(null);
+        const [token, setToken] = useState(cookies.get('token'));
         const [sector, setSector] = useState(1); // 1 para privado, 0 para público
+        const [idPlanContable, setIdPlanContable] = useState(1); 
+        const [isBloqueado, setIsBloqueado] = useState(false);
         const [errores, setErrores] = useState({
           codigo: false,
           rif: false,
+          rifFormat: false,
+          rifExit: false,
           nombre: false,
           patrono: false,
           sector: false,
@@ -63,14 +75,36 @@ function CajaAhorro() {
           vigenciaInicio: false,
           vigenciaFin: false,
           categorias: false,
-          usuarios: false
+          usuarios: false,
+          planContable: false
         });
         
         useEffect(() => {
           limpiarFormulario();
+
+          if(cookies.get('permisologia') != 1){
+            setIsDisabled(true);
+            setIsBloqueado(true);
+          }
         }, []);
 
-        // Obtener categorías al montar el componente
+        // Obtener plantilla plan contable al montar el componente
+        useEffect(() => {
+          const fetchPPContable = async () => {
+              try {
+                  const response = await axios.get(baseUrl + '/api/cajas-ahorro/lista-pplan-contable', {
+                    headers: token ? { Authorization: `${token}` } : {}
+                  });
+                  setPPlanContable(response.data.data);
+                  console.log("pplan contable",response.data.data)
+              } catch (error) {
+                  show_alerta('Error al cargar el plan contable', 'error');
+              }
+          };
+          fetchPPContable();
+        }, []);
+
+        // Obtener Roles al montar el componente
         useEffect(() => {
             const fetchRoles = async () => {
                 try {
@@ -145,6 +179,14 @@ function CajaAhorro() {
 
         // Método para agregar usuarios a la tabla
         const agregarUsuarioMaster = async () => {
+            var valPass = validarPassword(passMaster);
+            
+            if(!valPass.valido){
+              setErrorPasswordMa(true);
+              setMsjPasswordMa(valPass.mensaje);
+              return;
+            }
+
             if (!nombreMaster || !correoMaster) {
                 show_alerta("Todos los campos son requeridos", "error");
                 return;
@@ -157,13 +199,15 @@ function CajaAhorro() {
 
             var valEmail = await checkEmail(correoMaster);
             if (valEmail){
-              agregarUsuario(nombreMaster, correoMaster,passMaster, 3);
+              var rolMaster = 2;
+              agregarUsuario(nombreMaster, correoMaster,passMaster, rolMaster);
             
               // Resetear campos
               setNombreMaster("");
               setCorreoMaster("");
               setPassMaster("");
               setCorreoMaster_(false);
+              setErrorPasswordMa(false);
               limpiarError('usuarios');
             }else{
               setCorreoMaster_(true);
@@ -171,6 +215,14 @@ function CajaAhorro() {
         }
 
         const agregarUsuarioConsejo = async () => {
+            var valPass = validarPassword(passConsejo);
+          
+            if(!valPass.valido){
+              setErrorPasswordCo(true);
+              setMsjPasswordCo(valPass.mensaje);
+              return;
+            }
+
             if (!nombreConsejo || !correoConsejo) {
                 show_alerta("Todos los campos son requeridos", "error");
                 return;
@@ -189,6 +241,7 @@ function CajaAhorro() {
               setCorreoConsejo("");
               setPassConsejo("");
               setCorreoConsejo_(false);
+              setErrorPasswordCo(false);
               limpiarError('usuarios');
             }else{
               setCorreoConsejo_(true);
@@ -196,6 +249,13 @@ function CajaAhorro() {
         }
 
         const agregarUsuarioCumplimiento = async () => {
+            var valPass = validarPassword(passCumplimiento);
+            if(!valPass.valido){
+              setErrorPasswordCum(true);
+              setMsjPasswordCum(valPass.mensaje);
+              return;
+            }
+
             if (!nombreCumplimiento || !correoCumplimiento) {
                 show_alerta("Todos los campos son requeridos", "error");
                 return;
@@ -205,6 +265,13 @@ function CajaAhorro() {
                 show_alerta("Correo electrónico inválido", "error");
                 return;
             }
+
+            // Validar primero en la lista local
+            /*if (validarCorreoEnLista(correoCumplimiento)) {
+              setCorreoMaster_(true);
+              show_alerta("El correo ya está en uso en esta caja", "error");
+              return;
+            }*/
             const valEmail = await checkEmail(correoCumplimiento);
             console.log(correoCumplimiento)
             if (valEmail){
@@ -218,6 +285,7 @@ function CajaAhorro() {
               setNombreCumplimiento("");
               setCorreoCumplimiento("");
               setPassCumplimiento("")
+              setErrorPasswordCum(false);
             }else{
               setCorreoCumplimiento_(true);
             }
@@ -226,7 +294,8 @@ function CajaAhorro() {
             /*;*/
         }
 
-        const agregarUsuario = (nombreParam, correoParam,passParam, rolParam) => {
+        /*const agregarUsuario = (nombreParam, correoParam,passParam, rolParam) => {
+            
             const nuevoUsuario = {
                 idUsuario:null,
                 identificador: Date.now(), // ID único temporal
@@ -241,6 +310,43 @@ function CajaAhorro() {
           
             // Mostrar alerta
             show_alerta("Usuario agregado correctamente", "success");
+        };*/
+
+        const agregarUsuario = (nombreParam, correoParam, passParam, rolParam) => {
+          const nuevoRol = getRolPorCodigo(rolParam);
+          
+          // Crear copia del array actual de usuarios
+          const nuevosUsuarios = [...usuarios];
+          
+          // Buscar usuarios existentes con el mismo rol
+          const usuariosMismoRol = nuevosUsuarios.filter(
+              usuario => usuario.rol.idRol === nuevoRol.idRol
+          );
+          
+          // Si hay usuarios con el mismo rol, marcarlos como inhabilitados (estatus 2)
+          usuariosMismoRol.forEach(usuarioExistente => {
+              usuarioExistente.estatus = 2;
+          });
+          
+          // Crear el nuevo usuario con estatus activo (1)
+          const nuevoUsuario = {
+              idUsuario: null,
+              identificador: Date.now(), // ID único temporal
+              nombre: nombreParam,
+              correo: correoParam,
+              rol: nuevoRol,
+              pass: passParam,
+              estatus: 1
+          };
+          
+          // Agregar el nuevo usuario a la lista
+          nuevosUsuarios.push(nuevoUsuario);
+          
+          // Actualizar el estado
+          setUsuarios(nuevosUsuarios);
+          
+          // Mostrar alerta
+          show_alerta("Usuario agregado correctamente", "success");
         };
       
         const eliminarUsuario = (identificador) => {
@@ -332,9 +438,108 @@ function CajaAhorro() {
             setLapsoCierre(value);
         };
         
+        /**
+       * Valida un RIF según las normas venezolanas.
+       * @param {string} rif - RIF a validar (ej: "J-123456789")
+       * @returns {boolean} - `true` si es válido, `false` si no.
+       */
+        const validaRIF = (rif) => {
+          try {
+            // Normalizar: eliminar caracteres no alfanuméricos y convertir a mayúsculas
+            const cleanedRIF = rif.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
+            // Validar longitud mínima
+            if (cleanedRIF.length < 2) return false;
+        
+            const typeChar = cleanedRIF.charAt(0);
+            const rest = cleanedRIF.substring(1); // Parte después de la letra
+        
+            // Validar tipo de RIF
+            const validTypes = ['V', 'E', 'J', 'P', 'G', 'C'];
+            if (!validTypes.includes(typeChar)) return false;
+        
+            // Validar que la parte restante sean dígitos (2-9 caracteres)
+            if (!/^\d{2,9}$/.test(rest)) return false;
+        
+            // Separar base y dígito verificador
+            const baseDigits = rest.substring(0, rest.length - 1);
+            const checkDigit = parseInt(rest.charAt(rest.length - 1), 10);
+        
+            // Rellenar con ceros a la izquierda para completar 8 dígitos
+            const paddedBase = baseDigits.padStart(8, '0');
+        
+            // Factores de ponderación
+            const weightFactors = [3, 2, 7, 6, 5, 4, 3, 2];
+            const typeWeights = { 
+              V: 1, E: 2, J: 3, P: 4, G: 5, C: 3 
+            };
+            
+            // Calcular suma ponderada
+            let sum = 0;
+            for (let i = 0; i < 8; i++) {
+              sum += parseInt(paddedBase.charAt(i), 10) * weightFactors[i];
+            }
+            
+            // Agregar peso del tipo
+            sum += typeWeights[typeChar] * 4;
+        
+            // Calcular dígito verificador
+            let calculatedCDV = 11 - (sum % 11);
+            
+            // Ajustar casos especiales
+            if (calculatedCDV === 11 || calculatedCDV === 10) calculatedCDV = 0;
+        
+            return calculatedCDV === checkDigit;
+          } catch (error) {
+            console.error("Error validando RIF:", error);
+            return false;
+          }
+        };
+        
+        const validarPassword = (password) => {
+          // 1. Verificar longitud
+          if (password.length < 15) {
+            return {
+              valido: false,
+              mensaje: "La contraseña debe tener al menos 15 caracteres"
+            };
+          }
+          
+          // 2. Verificar caracteres permitidos
+          const caracteresPermitidos = /^[a-zA-Z0-9!#$%&*_.-]+$/;
+          if (!caracteresPermitidos.test(password)) {
+            return {
+              valido: false,
+              mensaje: "Caracteres inválidos. Solo se permiten: letras, números y !#$%&*._-"
+            };
+          }
+          
+          // 3. Verificar mayúscula
+          if (!/[A-Z]/.test(password)) {
+            return {
+              valido: false,
+              mensaje: "Debe contener al menos una letra mayúscula"
+            };
+          }
+          
+          // 4. Verificar caracteres repetidos
+          if (/(.)\1\1/.test(password)) {
+            return {
+              valido: false,
+              mensaje: "No puede tener tres caracteres idénticos consecutivos"
+            };
+          }
+          
+          return {
+            valido: true,
+            mensaje: "Contraseña válida"
+          };
+        };
+
         const guardarDatos = async () => {
-            if (validarCampos()) {
-              show_alerta("Por favor complete todos los campos requeridos", "error");
+
+            if (await validarCampos()) {
+              show_alerta("Por favor verifique los campos", "error");
               return;
             }
 
@@ -375,7 +580,8 @@ function CajaAhorro() {
                 inicioVigencia: inicioVigencia,
                 finVigencia: finVigencia,
                 ultimoLapsoGenerado: convertToISO(lapsoGenerado),
-                estatus: 1
+                estatus: 1,
+                idPPlanContable:idPlanContable
             };
         
             console.log("lapsoGenerado",payload)
@@ -505,7 +711,7 @@ function CajaAhorro() {
         };
 
         // Método para buscar caja por código o RIF
-        const buscarCaja = async (tipo, valor) => {
+        const buscarCaja = async (tipo, valor, respuestaCompleta) => {
             if (!valor.trim()) {
               show_alerta(`Ingrese un ${tipo === 'codigo' ? 'código' : 'RIF'} válido`, 'warning');
               return;
@@ -522,6 +728,9 @@ function CajaAhorro() {
               });
               
               if (response.data) {
+                if (!respuestaCompleta){
+                   return true;
+                }
                 setIsModoFind(true);//indica que esta modo consulta
                 setIsDisabled(true);
                 setIsModoEdit(false);
@@ -531,14 +740,62 @@ function CajaAhorro() {
                 llenarFormulario(response.data);
                 show_alerta('Caja de ahorro encontrada', 'success');
               } else {
+                if (!respuestaCompleta){
+                  return false;
+                }
                 show_alerta('No se encontró ninguna caja', 'info');
                 limpiarFormulario();
               }
             } catch (error) {
+              if (!respuestaCompleta){
+                return false;
+              }
               show_alerta(`Error al buscar caja: ${error.message}`, 'error');
             } finally {
               setIsSearching(false);
             }
+        };
+
+        // Método para validar caja por código o RIF cuando se modifica
+        const validarCaja = async (tipo, valor, respuestaCompleta) => {
+          if (!valor.trim()) {
+            show_alerta(`Ingrese un ${tipo === 'codigo' ? 'código' : 'RIF'} válido`, 'warning');
+            return;
+          }
+        
+          setIsSearching(true);
+          limpiarAllError();
+          try {
+            const response = await axios.get(`${baseUrl}/api/cajas-ahorro/validar-caja`, {
+              params: {
+                tipo:tipo,
+                valor:valor,
+                idCaho:currentCaja.idCaho
+              }
+            });
+            
+            if (response.data) {
+              if (!respuestaCompleta){
+                 return true;
+              }
+              setIsModoFind(true);//indica que esta modo consulta
+              setIsDisabled(true);
+              setIsModoEdit(false);
+              console.log("buscar data: ",response.data);
+              setCurrentCaja(response.data);
+              setIdCaho(response.data.idCaho);
+            } else {
+              if (!respuestaCompleta){
+                return false;
+              }
+            }
+          } catch (error) {
+            if (!respuestaCompleta){
+              return false;
+            }
+          } finally {
+            setIsSearching(false);
+          }
         };
 
         const obtenerFechaCierre = async (fechaUmc) => {
@@ -600,7 +857,9 @@ function CajaAhorro() {
             if (caja.finVigencia) {
               setEndDate(new Date(caja.finVigencia));
             }
-            
+            //plan contable
+            setIdPlanContable(caja.idPPlanContable);
+
             // Categorías
             if (caja.categoriaCajaAhorros && Array.isArray(caja.categoriaCajaAhorros)) {
                 // Transformar la estructura de datos
@@ -665,7 +924,7 @@ function CajaAhorro() {
             setPassCumplimiento("");
             setUsuarios([]);
             setLapsoGenerado('');
-
+            setIdPlanContable(0);
             // Limpiar inputs del formulario
             document.getElementById('codigo').value = '';
             document.getElementById('rif').value = '';
@@ -695,9 +954,9 @@ function CajaAhorro() {
         const checkEmail = async (email) => {
           try {
             //valida primero localmente
-            var validacion_email_1 = usuarios.filter(usuario => usuario.email === email);
-console.log("validacion_email_1",validacion_email_1);
-            if (validacion_email_1.length >0){
+            var validacion_email_1 = usuarios.filter(usuario => usuario.correo === email);
+            //console.log("validacion_email_1",validacion_email_1);
+            if (validacion_email_1.length > 0){
               return false;
             }
 
@@ -707,7 +966,7 @@ console.log("validacion_email_1",validacion_email_1);
               }
             });
             
-            console.log("data:",response.data);
+            //console.log("data:",response.data);
             if (response.data) {
               show_alerta(`Usuario exitente`);
               return false;
@@ -723,10 +982,37 @@ console.log("validacion_email_1",validacion_email_1);
         };
 
         // Método de validación
-        const validarCampos = () => {
+        const validarCampos = async () => {
+          limpiarAllError();
+          var valRIF = !document.getElementById('rif').value.trim(); 
+          var _rifFormat = false;
+          var _rifExit = false;
+
+          if(!valRIF){
+            //valida formato del rif
+            if(!validaRIF(document.getElementById('rif').value.trim())){
+              _rifFormat = true;
+            }
+          }
+
+          if(!valRIF){
+            //valida que no este en bd
+            if (isModoEdit && currentCaja) {
+              if(await validarCaja('rif', document.getElementById('rif').value,false)){
+                _rifExit = true;
+              }
+            }else{
+              if(await buscarCaja('rif', document.getElementById('rif').value,false)){
+                _rifExit = true;
+              }
+            }
+          }
+
           const nuevosErrores = {
             codigo: !document.getElementById('codigo').value.trim(),
-            rif: !document.getElementById('rif').value.trim(),
+            rif: valRIF,
+            rifExit: _rifExit,
+            rifFormat: _rifFormat,
             nombre: !document.getElementById('nombre-caja').value.trim(),
             patrono: !document.getElementById('patrono').value.trim(),
             //sector: !document.getElementById('publico').checked && !document.getElementById('privado').checked,
@@ -735,13 +1021,16 @@ console.log("validacion_email_1",validacion_email_1);
             lapsoCierre: !lapsoCierre,
             ultimoMes: !ultimoMesCerrado,
             categorias: selectedCategories.length === 0,
-            usuarios: usuarios.length === 0
+            usuarios: usuarios.length === 0,
+            planContable: idPlanContable === 0
           };
 
           // Validar fechas de vigencia
           /*const vigenciaInputs = document.querySelectorAll('.date-range-input input');
           nuevosErrores.vigenciaInicio = !vigenciaInputs[0].value.trim();
           nuevosErrores.vigenciaFin = !vigenciaInputs[1].value.trim();*/
+
+          //validación del rif
           nuevosErrores.vigenciaInicio = !startDate;
           nuevosErrores.vigenciaFin = !endDate;
           setErrores(nuevosErrores);
@@ -750,23 +1039,33 @@ console.log("validacion_email_1",validacion_email_1);
           return Object.values(nuevosErrores).some(error => error);
         };
 
+        const validarCorreoEnLista = (correo) => {
+          const correoLower = correo.toLowerCase().trim();
+          return usuarios.some(usuario => 
+            usuario.correo.toLowerCase().trim() === correoLower
+          );
+        };
+
         const limpiarError = (campo) => {
           setErrores(prev => ({ ...prev, [campo]: false }));
         };
 
         const limpiarAllError = () => {
             limpiarError('codigo');
-            limpiarError('rif')
-            limpiarError('nombre')
-            limpiarError('patrono')
-            limpiarError('sector')
-            limpiarError('mesCierre')
-            limpiarError('lapsoCierre')
+            limpiarError('rif');
+            limpiarError('rifFormat');
+            limpiarError('rifExit');
+            limpiarError('nombre');
+            limpiarError('patrono');
+            limpiarError('sector');
+            limpiarError('mesCierre');
+            limpiarError('lapsoCierre');
             limpiarError('ultimoMes');
             limpiarError('vigenciaInicio');
             limpiarError('vigenciaFin');
             limpiarError('categorias');
             limpiarError('usuarios');
+            limpiarError('planContable');
         };
   return (
     <div className="caja-ahorro-container" onClick={() => hiddenSelct()}>
@@ -785,7 +1084,7 @@ console.log("validacion_email_1",validacion_email_1);
                 />
                 <button 
                   className="search-button"
-                  onClick={() => buscarCaja('codigo', document.getElementById('codigo').value)}
+                  onClick={() => buscarCaja('codigo', document.getElementById('codigo').value,true)}
                   disabled={isSearching}
                 >
                   {isSearching ? <div className="mini-spinner"></div> : '🔍'}
@@ -802,13 +1101,15 @@ console.log("validacion_email_1",validacion_email_1);
                   onChange={() => limpiarError('rif')}/>
                 <button 
                 className="search-button"
-                onClick={() => buscarCaja('rif', document.getElementById('rif').value)}
+                onClick={() => buscarCaja('rif', document.getElementById('rif').value,true)}
                 disabled={isSearching}
                 >
                 {isSearching ? <div className="mini-spinner"></div> : '🔍'}
                 </button>
             </div>
             {errores.rif && <div className="error-message">Este campo es requerido</div>}
+            {errores.rifFormat && <div className="error-message">Verifique el formato, ejem. J123456789</div>}
+            {errores.rifExit && <div className="error-message">Ya se encuentra registrado</div>}
         </div>
 
         {/*<div className="form-group sector">
@@ -854,34 +1155,38 @@ console.log("validacion_email_1",validacion_email_1);
           </div>
           {errores.sector && <div className="error-message">Seleccione un sector</div>}
         </div>
-
-        <div className="form-group acciones">
-          <button className={isDisabled ? "editar-button" : "button-disabled"} onClick={habilitarEdicion} disabled={isDisabled ? false : true}><FaPencilAlt style={{ marginRight: "8px" }}/> Editar</button>
-          <button className="limpiar-button" onClick={limpiarFormulario}><FaBroom style={{ marginRight: "0.5rem" }}/>  Limpiar</button>
-          <button className="inhabilitar-button"><FaTimesCircle style={{ marginRight: "8px" }} />  Inhabilitar</button>
-        </div>
+        {!isBloqueado ?
+            <div className="form-group acciones">
+              <button className={isDisabled ? "editar-button" : "button-disabled"} onClick={habilitarEdicion} disabled={isDisabled ? false : true}><FaPencilAlt style={{ marginRight: "8px" }}/> Editar</button>
+              <button className="limpiar-button" onClick={limpiarFormulario}><FaBroom style={{ marginRight: "0.5rem" }}/>  Limpiar</button>
+              <button className="inhabilitar-button"><FaTimesCircle style={{ marginRight: "8px" }} />  Inhabilitar</button>
+            </div>
+          : ''
+        }
       </div>  
 
       <div className="form-grid-second">
         <div className="form-group nombre-caja">
           <label htmlFor="nombre-caja">Nombre de la Caja</label>
-          <input type="text" id="nombre-caja" disabled={isDisabled} className={errores.nombre ? 'error-input' : ''} onChange={() => limpiarError('nombre')}/>
+          <input type="text" id="nombre-caja" disabled={isDisabled} maxLength={300}
+            className={errores.nombre ? 'error-input' : ''} onChange={() => limpiarError('nombre')}/>
           {errores.nombre && <div className="error-message">Este campo es requerido</div>}
         </div>
 
         <div className="form-group patrono">
           <label htmlFor="patrono">Patrono</label>
-          <input type="text" id="patrono" disabled={isDisabled} className={errores.patrono ? 'error-input' : ''} onChange={() => limpiarError('patrono')}/>
+          <input type="text" id="patrono" disabled={isDisabled} maxLength={300}
+            className={errores.patrono ? 'error-input' : ''} onChange={() => limpiarError('patrono')}/>
           {errores.patrono && <div className="error-message">Este campo es requerido</div>}
         </div>
       </div>
 
       <div className="form-grid-third">
-      <div className="form-group mes-cierre">
+        <div className="form-group mes-cierre">
         <label htmlFor="mes-cierre">Mes Cierre</label>
         <select 
             id="mes-cierre" 
-            defaultValue="01" // Valor por defecto correspondiente a Ene
+            defaultValue="12" // Valor por defecto correspondiente a Dic
             //className="mes-select" 
             disabled={isDisabled}
             className={errores.mesCierre ? 'error-input' : ''}
@@ -997,6 +1302,14 @@ console.log("validacion_email_1",validacion_email_1);
               onChange={date => {
                 setStartDate(date);
                 limpiarError('vigenciaInicio');
+                // Sumar 3 años a la fecha de inicio para la fecha de fin
+                if (date) {
+                  const newEndDate = new Date(date);
+                  newEndDate.setFullYear(newEndDate.getFullYear() + 3);
+                  setEndDate(newEndDate);
+                } else {
+                  setEndDate(null);
+                }
               }}
               selectsStart
               startDate={startDate}
@@ -1033,7 +1346,34 @@ console.log("validacion_email_1",validacion_email_1);
         </div>
       </div>
 
+    <div className="form-grid-fourth" style={{borderBottom:'none'}}>
+      <div className="form-group mes-cierre" style={{width: '100%'}}>
+        <label>Plan Contable</label>
+        <select 
+            id="pplan_contable" 
+            defaultValue="" 
+            disabled={isModoFind}
+            value={idPlanContable}
+            className={errores.planContable ? 'error-input' : ''}
+            onChange={(e) => {
+                setIdPlanContable(e.target.value);
+                limpiarError('planContable');
+              }}
+        >
+            <option value="">Seleccione un plan contable</option>
+            {pplanContable && pplanContable.map(plan => (
+                <option key={plan.idPPlanContable} value={plan.idPPlanContable}>
+                    {plan.descripcion}
+                </option>
+            ))}
+        </select>
+        {errores.planContable && <div className="error-message">Seleccione un plan contable</div>}
+      </div>
+    </div>
+
     <div className="form-grid-fourth">
+      
+      
       <div className="categoria-caja">
         <label>Categoría de la Caja</label>
         <div 
@@ -1119,6 +1459,7 @@ console.log("validacion_email_1",validacion_email_1);
               <input type="password" id="contrasena-master" disabled={isDisabled}
                 value={passMaster}
                 onChange={(e) => setPassMaster(e.target.value)}/>
+              {errorPasswordMa && <div className="error-message">{msjPasswordMa}</div>}
             </div>
             <button className={isDisabled ?  'disabled-button' : 'crear-button' } onClick={agregarUsuarioMaster} disabled={isDisabled}>Crear</button>
           </div>
@@ -1145,6 +1486,7 @@ console.log("validacion_email_1",validacion_email_1);
               <input type="password" id="contrasena-consejo" disabled={isDisabled}
                 value={passConsejo}
                 onChange={(e) => setPassConsejo(e.target.value)}/>
+              {errorPasswordCo && <div className="error-message">{msjPasswordCo}</div>}
             </div>
             {/*<button className="crear-button-disabled">Crear</button>*/}
             <button className={isDisabled ?  'disabled-button' : 'crear-button' } onClick={agregarUsuarioConsejo} disabled={isDisabled}>Crear</button>
@@ -1173,6 +1515,7 @@ console.log("validacion_email_1",validacion_email_1);
               <input type="password" id="contrasena-cumplimiento" disabled={isDisabled}
                     value={passCumplimiento}
                     onChange={(e) => setPassCumplimiento(e.target.value)} />
+              {errorPasswordCum && <div className="error-message">{msjPasswordCum}</div>}
             </div>
             <button className={isDisabled ?  'disabled-button' : 'crear-button' } onClick={agregarUsuarioCumplimiento} disabled={isDisabled}>Crear</button>
           </div>
@@ -1229,23 +1572,27 @@ console.log("validacion_email_1",validacion_email_1);
         </div>
       </div>
 
-      <div className="footer-actions">
-        {/*<button className="exportar-excel-button">Exportar a Excel</button>*/}
-        <button 
-            onClick={guardarDatos}
-            disabled={isDisabled}
-            className={isDisabled ?  'guardar-button disabled-button' : 'guardar-button' }  
-            >
-            {isModoEdit ? (
-                'Modificar'
-            ) : 'Guardar'}
-            {/*{isSaving ? (
-                <div className="spinner-container">
-                    <div className="spinner"></div>
-                </div>
-            ) : 'Guardar'}*/}
-        </button>
-      </div>
+      {!isBloqueado ?
+          <div className="footer-actions">
+            {/*<button className="exportar-excel-button">Exportar a Excel</button>*/}
+            <button 
+                onClick={guardarDatos}
+                disabled={isDisabled}
+                className={isDisabled ?  'guardar-button disabled-button' : 'guardar-button' }  
+                >
+                {isModoEdit ? (
+                    'Modificar'
+                ) : 'Guardar'}
+                {/*{isSaving ? (
+                    <div className="spinner-container">
+                        <div className="spinner"></div>
+                    </div>
+                ) : 'Guardar'}*/}
+            </button>
+          </div>
+        :''
+      }
+      
 
       {isSaving && (
         <div className="overlay">

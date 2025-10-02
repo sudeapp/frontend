@@ -37,6 +37,9 @@ const ListadoComprobante = () => {
   const [endDate, setEndDate] = useState(null);
   const [fechaRango, setFechaRango] = useState('');
   const [estatusBusqueda, setEstatusBusqueda] = useState(0);
+  const [sectorCaho, seSectorCaho] = useState(cookies.get('sectorCaho'));
+  const [codigoCaho, setCodigoCaho] = useState(cookies.get('codigoCaho'));
+
   // Datos de ejemplo (simulando la respuesta de la API)
   useEffect(() => {
     setLoading(true);
@@ -361,6 +364,13 @@ const ListadoComprobante = () => {
     html2pdf().set(opt).from(clonedElement).save();
   };
 
+  // Función para convertir formato YYYY-MM-DD a DD/MM/YYYY 
+  const convertToISO2 = (dateStr) => {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-');
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  };
+
   if (loading) {
     return (
       <div style={{
@@ -427,7 +437,7 @@ const ListadoComprobante = () => {
   }, { debitos: 0, creditos: 0 });
 
   return (
-    <div style={{ 
+    <div className="lista-comprobantes-container" style={{ 
       fontFamily: 'Arial, sans-serif', 
       margin: '0 auto', 
       padding: '20px',
@@ -480,11 +490,13 @@ const ListadoComprobante = () => {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div><strong>Caja:</strong> {nombreCaho}</div>
-            {fecha ?
-                <div className="print"><strong>Fecha seleccionada:</strong> {fecha} </div>
+            <div><strong>Sector:</strong> {sectorCaho == 0 ? 'Público' : 'Privado'}</div>
+            <div><strong>Número de Registro:</strong> {codigoCaho}</div>
+            {startDate ?
+                <div className="print"><strong>Fecha Reporte:</strong> {convertToISO2(convertToISO(startDate))}-{convertToISO2(convertToISO(endDate))} </div>
                 :
                 ''
-            }
+            }            
             
           </div>
 

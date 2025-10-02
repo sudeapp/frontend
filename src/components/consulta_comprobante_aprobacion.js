@@ -190,7 +190,8 @@ const ConsultaComprobanteAprobacion = ({
         idCaho:comprobante.idCaho,
         nroCbte:comprobante.nroCbte,
         estatusCbte:comprobante.estatusCbte,
-        comprobanteDet: comprobante.comprobanteDet
+        comprobanteDet: comprobante.comprobanteDet,
+        isConsulting:true
       }));
       
       setComprobantes(comprobantesMapeados);
@@ -253,7 +254,7 @@ const ConsultaComprobanteAprobacion = ({
         // Actualizar la lista de comprobantes
         await handleConsultar();
       } else {
-        show_alerta("No se pudieron verificar algunos comprobantes, valide que estén cuadrados", "error");
+        show_alerta("No se pudieron verificar algunos comprobantes, valide los comprobantes", "error");
       }
     } catch (err) {
       console.error('Error al verificar comprobantes:', err);
@@ -279,7 +280,7 @@ const ConsultaComprobanteAprobacion = ({
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, verificar!'
+      confirmButtonText: 'Sí, actualizar!'
     });
 
     // Si el usuario cancela, salir de la función
@@ -316,7 +317,7 @@ const ConsultaComprobanteAprobacion = ({
         // Actualizar la lista de comprobantes
         await handleConsultar();
       } else {
-        show_alerta("No se pudieron actualizar algunos comprobantes", "error");
+        show_alerta("No se pudieron actualizar algunos comprobantes, valide los comprobantes", "error");
       }
     } catch (err) {
       console.error('Error al actualizar comprobantes:', err);
@@ -471,9 +472,9 @@ const ConsultaComprobanteAprobacion = ({
               <th>Secuencia</th>
               <th>Fecha Valor</th>
               <th>Usuario</th>
-              <th>Débitos</th>
-              <th>Créditos</th>
-              <th>Comprobante</th>
+              <th style={{textAlign: 'center'}}>Débitos</th>
+              <th style={{textAlign: 'center'}}>Créditos</th>
+              <th style={{textAlign: 'center'}}>Comprobante</th>
               <th>Estatus</th>
               <th>Acciones</th>
               <th>
@@ -493,7 +494,7 @@ const ConsultaComprobanteAprobacion = ({
                 <td>{item.usuario}</td>
                 <td className="text-right">{item.debitos}</td>
                 <td className="text-right">{item.creditos}</td>
-                <td>{item.comprobante}</td>
+                <td style={{textAlign: 'center'}}>{item.comprobante}</td>
                 <td className={`status-button 
                                 ${item.estatusCbte == 0 ? 'cargado' : ''} 
                                 ${item.estatusCbte == 1 ? 'verificado' : ''} 

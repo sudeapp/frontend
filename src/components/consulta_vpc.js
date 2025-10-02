@@ -80,7 +80,7 @@ const ConsultaVpc = ({ setCurrentComponent }) => {
   };
 
   const handleRegresar = () => {
-    handleChangeComponent('moduloContabilidad');
+    handleChangeComponent('informe');
   };
 
   const handleLimpiar = () => {
@@ -92,7 +92,7 @@ const ConsultaVpc = ({ setCurrentComponent }) => {
   };
 
   return (
-    <div className="consulta-comprobantes-container">
+    <div className="consulta-vpc-container">
       <div className="header">
         <button className="regresar-button" onClick={handleRegresar}>
           <span className="icon">←</span> Regresar

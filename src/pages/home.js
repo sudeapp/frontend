@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaBars, FaUser, FaHome, FaChartBar, FaCog, FaSignOutAlt,FaChartLine,FaShareAlt,FaPoll,FaToolbox } from 'react-icons/fa';
+import { FaBars, FaUser, FaHome, FaChartBar, FaCog, FaSignOutAlt,FaChartLine,FaShareAlt,FaPoll,FaToolbox, FaSuitcase } from 'react-icons/fa';
 import logoImage from '../assets/img/logo.png';
 import '../assets/css/home.css';
 import Cookies from 'universal-cookie';
@@ -17,7 +17,16 @@ import LibroDiario from '../components/libro_diario_component';
 import ListadoComprobante from '../components/listado_comprobante_component';
 import EstadoResultado from '../components/rpt_estado_resultado';
 import ConsultaVpc from '../components/consulta_vpc';
+import BalanceComprobacion from '../components/rpt_balance_comprobacion';
+import BalanceGeneral from '../components/rpt_balance_general';
 import { FaBoxArchive } from 'react-icons/fa6';
+import CatalogoCuentaCaja from '../components/catalogo_cuenta_caja';
+import PlantillaCatalogoCuenta from '../components/plantilla_catalogo_cuenta';
+import ModuloPlanContable from '../components/modulo_plan_contable';
+import PlantillaPlanContable from '../components/plantilla_plan_contable';
+import PlantillaPlanNivel from '../components/plantilla_plan_nivel';
+import PerfilUsuario from '../components/perfil_usuario';
+import ModuloCierre from '../components/modulo_cierre';
 
 const Home = () => {
   const cookies = new Cookies();
@@ -27,7 +36,9 @@ const Home = () => {
   const [comprobanteSeleccionado, setComprobanteSeleccionado] = useState(null);
   const [isParamsConsultingUpdate, setIsParamsConsultingUpdate] = useState(null);
   const [usuarioCaja, setUsuarioCaja] = useState(cookies.get('usuario_caja'));
-
+  const [permisologia, setPermisologia] = useState(cookies.get('permisologia'));
+  const [isShowBtnCierre, setIsShowBtnCierre] = useState(false);
+  const [isShowBtnUser, setIsShowBtnUser] = useState(false);
 
   useEffect(() => {
     if(!cookies.get('idUsuario')) {
@@ -40,6 +51,15 @@ const Home = () => {
 
     if (usuarioCaja == 1 ){
       setCurrentComponent('dashboard')
+    }
+
+    if(usuarioCaja == 2 && permisologia == 2){
+      setIsShowBtnCierre(true);
+      setIsShowBtnUser(true);
+    }
+
+    if(usuarioCaja == 2 && permisologia == 5){
+      setIsShowBtnCierre(true);
     }
   }, []);
 /*
@@ -69,6 +89,9 @@ const Home = () => {
 
   const renderComponent = () => {
     switch(currentComponent) {
+      case 'perfilUsuario':
+          return <PerfilUsuario 
+                          setCurrentComponent={setCurrentComponent}/>;  
       case 'dashboardCaja':
           return <DashboardCaja 
                           setCurrentComponent={setCurrentComponent}/>;  
@@ -76,11 +99,17 @@ const Home = () => {
           return <DashboardComponent 
                           setCurrentComponent={setCurrentComponent}/>;        
       case 'moduloContabilidad':
-        return <ModuloContabilidad setCurrentComponent={setCurrentComponent}/>;
+        return <ModuloContabilidad 
+                    setCurrentComponent={setCurrentComponent}
+                    setComprobanteSeleccionado={setComprobanteSeleccionado}/>;
       case 'informe':
         return <Informe setCurrentComponent={setCurrentComponent}/>;
       case 'cajaAhorro':
         return <CajaAhorro />;
+      case 'moduloPlanContable':
+        return <ModuloPlanContable setCurrentComponent={setCurrentComponent}/>;
+      case 'moduloCierre':
+        return <ModuloCierre setCurrentComponent={setCurrentComponent}/>;
       case 'usuarioSudeca':
           return <UsuariosSudeca />;
       case 'registroComprobantes':
@@ -110,6 +139,14 @@ const Home = () => {
       case 'registroUsuarios':
           return <RegistroUsuarios 
                           setCurrentComponent={setCurrentComponent}/>;
+      case 'catalogoCuentaCaja':
+          return <CatalogoCuentaCaja setCurrentComponent={setCurrentComponent}/>;    
+      case 'catalogoCuentaSudeca':
+        return <PlantillaCatalogoCuenta setCurrentComponent={setCurrentComponent}/>; 
+      case 'planContable':
+        return <PlantillaPlanContable setCurrentComponent={setCurrentComponent}/>;  
+      case 'planNivel':
+        return <PlantillaPlanNivel setCurrentComponent={setCurrentComponent}/>;                     
       case 'consultaVpc':
           return <ConsultaVpc setCurrentComponent={setCurrentComponent}/>; 
       case 'libroDiario':
@@ -117,7 +154,11 @@ const Home = () => {
       case 'listadoComprobante':
           return <ListadoComprobante setCurrentComponent={setCurrentComponent}/>;    
       case 'estadoResultado':
-          return <EstadoResultado setCurrentComponent={setCurrentComponent}/>;                 
+          return <EstadoResultado setCurrentComponent={setCurrentComponent}/>; 
+      case 'balanceComprobacion':
+          return <BalanceComprobacion setCurrentComponent={setCurrentComponent}/>;
+      case 'balanceGeneral':
+        return <BalanceGeneral setCurrentComponent={setCurrentComponent}/>;                 
       default:
         return '';
     }
@@ -139,7 +180,7 @@ const Home = () => {
             <img src={logoImage} width="36" alt="Logo"/>
           </div>
 
-          <span className="navbar-text mx-auto d-none d-md-block fw-semibold fs-5">SICONCAV</span>
+          <span className="navbar-text mx-auto d-none d-md-block fw-semibold fs-5 text-uppercase">Sistema Administrativo, Contable y Financiero para las Cajas de Ahorro</span>
 
           <div className="dropdown">
             <button 
@@ -155,7 +196,10 @@ const Home = () => {
             </button>
             
             <ul className={`dropdown-menu dropdown-menu-end ${isProfileMenuOpen ? 'show' : ''}`}>
-              <li><a className="dropdown-item" href="#">Mi perfil</a></li>
+              <li><a className="dropdown-item" href="#"  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentComponent('perfilUsuario');
+                  }} >Mi perfil</a></li>
               <li><a className="dropdown-item" href="#">Configuración</a></li>
               <li><a className="dropdown-item" href="#">Ayuda</a></li>
               <li><hr className="dropdown-divider" /></li>
@@ -176,7 +220,7 @@ const Home = () => {
           style={{ width: '250px', backgroundColor: '#F1F3F6' }}
         >
           <ul className="nav nav-pills flex-column mb-auto">
-            {usuarioCaja !== 1 ?
+            {usuarioCaja === 2 ?
               <li className="nav-item">
                 <a 
                   href="#"
@@ -208,11 +252,14 @@ const Home = () => {
               :
               '' 
             }
-            <li>
-              <a href="#" className="nav-link text-dark">
-                <FaPoll className="me-2" /> Administrativo
-              </a>
-            </li>
+            {usuarioCaja === 1 ?
+              <li>
+                <a href="#" className="nav-link text-dark">
+                  <FaPoll className="me-2" /> Administrativo
+                </a>
+              </li>
+              : ''
+            }
             {usuarioCaja !== 1 ?
               <li>
                 <a 
@@ -232,21 +279,27 @@ const Home = () => {
               :
               ''
             }
-            
-            <li>
-              <a 
-                href="#" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentComponent('informe');
-                }} 
-                className={`nav-link ${currentComponent === 'informe' ||
-                                        currentComponent === 'libroDiario' || 
-                                        currentComponent === 'estadoResultado' || 
-                                        currentComponent === 'listadoComprobante' ? 'active' : ''}`}>
-                <FaChartBar className="me-2" /> Informes
-              </a>
-            </li>
+            {usuarioCaja !== 1 ?
+              <li>
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentComponent('informe');
+                  }} 
+                  className={`nav-link ${currentComponent === 'informe' ||
+                                          currentComponent === 'libroDiario' || 
+                                          currentComponent === 'estadoResultado' || 
+                                          currentComponent === 'balanceComprobacion' || 
+                                          currentComponent === 'balanceGeneral' || 
+                                          currentComponent === 'consultaVpc' || 
+                                          currentComponent === 'listadoComprobante' ? 'active' : ''}`}>
+                  <FaChartBar className="me-2" /> Informes
+                </a>
+              </li>
+              :
+              ''
+            }
             <li>
               <a href="#" className="nav-link text-dark">
                 <FaShareAlt className="me-2" /> Finanzas
@@ -257,7 +310,23 @@ const Home = () => {
                 <FaChartLine className="me-2" /> Inversión
               </a>
             </li>
-            {usuarioCaja !== 1 ?
+            {usuarioCaja === 2 && isShowBtnCierre ?
+              <li className="nav-item">
+                <a 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentComponent('moduloCierre');
+                  }} 
+                  className={`nav-link ${currentComponent === 'moduloCierre' ? 'active' : ''}`}
+                >
+                  <FaSuitcase className="me-2" /> Cierre Contable
+                </a>
+              </li>
+              :
+              ''
+           }
+           {usuarioCaja === 2 && isShowBtnUser ?
               <li className="nav-item">
                 <a 
                   href="#"
@@ -273,9 +342,25 @@ const Home = () => {
               :
               ''
            }
-
            {usuarioCaja === 1 ?
-
+              <li className="nav-item">
+                <a 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentComponent('moduloPlanContable');
+                  }} 
+                  className={`nav-link ${
+                    currentComponent === 'catalogoCuentaSudeca' ||
+                    currentComponent === 'moduloPlanContable' ? 'active' : ''}`}
+                >
+                  <FaToolbox className="me-2" /> Plan Contable
+                </a>
+              </li>
+              :
+              ''
+           }
+           {usuarioCaja === 1 ?
               <li className="nav-item">
                 <a 
                   href="#"

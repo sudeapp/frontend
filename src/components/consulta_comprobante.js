@@ -136,10 +136,12 @@ const ConsultaComprobante = ({ setCurrentComponent,setComprobanteSeleccionado,se
         fechaCbte:comprobante.fechaCbte,
         idCaho:comprobante.idCaho,
         nroCbte:comprobante.nroCbte,
-        comprobanteDet: comprobante.comprobanteDet
+        comprobanteDet: comprobante.comprobanteDet,
+        isConsulting:true,
+        estatusCbte:comprobante.estatusCbte
       }));
       setComprobantes(comprobantesMapeados);
-      
+      console.log("comprobantes",comprobantes)
     } catch (err) {
       console.error('Error al consultar comprobantes:', err);
       setError('Error al cargar los datos. Por favor intente nuevamente.');
@@ -259,9 +261,9 @@ const ConsultaComprobante = ({ setCurrentComponent,setComprobanteSeleccionado,se
               <th>Secuencia</th>
               <th>Fecha Valor</th>
               <th>Usuario</th>
-              <th>Débitos</th>
-              <th>Créditos</th>
-              <th>Comprobante</th>
+              <th style={{textAlign: 'center'}}>Débitos</th>
+              <th style={{textAlign: 'center'}}>Créditos</th>
+              <th style={{textAlign: 'center'}}>Comprobante</th>
               <th></th> {/* Columna para el icono de ojo */}
             </tr>
           </thead>
@@ -273,7 +275,7 @@ const ConsultaComprobante = ({ setCurrentComponent,setComprobanteSeleccionado,se
                 <td>{item.usuario}</td>
                 <td className="text-right">{item.debitos}</td>
                 <td className="text-right">{item.creditos}</td>
-                <td>{item.comprobante}</td>
+                <td style={{textAlign: 'center'}}>{item.comprobante}</td>
                 <td className="eye-icon-cell">
                   <span className="eye-icon"  onClick={() => handleOpenDetail(item)}>👁️</span>
                 </td>

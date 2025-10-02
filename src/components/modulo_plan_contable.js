@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboardList, faSearch, faListAlt, faShieldAlt, faEye,faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { FaBars} from 'react-icons/fa';
 
-const Informe = ({ setCurrentComponent }) => {
+const ModuloPlanContable = ({ setCurrentComponent }) => {
   const css = `
   .accounting-module {
     font-family: sans-serif;
@@ -30,7 +30,7 @@ const Informe = ({ setCurrentComponent }) => {
       cursor: pointer;
       transition: all 0.3s ease;
       flex: 1;
-      min-width: 180px;
+      max-width: 180px;
     }
 
     .action-card:hover {
@@ -141,33 +141,22 @@ const Informe = ({ setCurrentComponent }) => {
 
       <h2 className="dashboard-title">
           <FontAwesomeIcon icon={faChartPie} className="dashboard-title-icon" />
-          Reportes de Contabilidad
+          Administración de Plan Contable
       </h2>
       <div className="actions-bar">
-        <div className="action-card" onClick={() => handleChangeComponent('libroDiario')}>
+        <div className="action-card" onClick={() => handleChangeComponent('planContable')}>
           <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
-          <span>Libro Diario</span>
-          
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('listadoComprobante')}>
-          <FontAwesomeIcon icon={faSearch} className="action-icon" />
-          <span style={{textAlign: "center"}}> Listado de Comprobantes</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('estadoResultado')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span>Estado Resultado</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('balanceComprobacion')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span style={{textAlign: "center"}}>Balance de Comprobación</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('balanceGeneral')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span>Situación Financiera</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('consultaVpc')}>
-          <FontAwesomeIcon icon={faShieldAlt} className="action-icon" />
           <span>Plan Contable</span>
+        </div>
+
+        <div className="action-card" onClick={() => handleChangeComponent('planNivel')}>
+          <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
+          <span>Plan Nivel</span>
+        </div>
+
+        <div className="action-card" onClick={() => handleChangeComponent('catalogoCuentaSudeca')}>
+          <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
+          <span style={{textAlign: "center"}}>Catálogo de Cuentas</span>
         </div>
       </div>
 
@@ -175,4 +164,4 @@ const Informe = ({ setCurrentComponent }) => {
   )
 }
 
-export default Informe;
+export default ModuloPlanContable;

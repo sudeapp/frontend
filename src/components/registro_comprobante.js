@@ -33,17 +33,36 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
   const [idPlanContable, setIdPlanContable] = useState(cookies.get('idPlanContable')); 
   const [idTcbte, setIdTcbte] = useState(1);
   const [isSpinnerModifying, setIsSpinnerModifying] = useState(false);
+  const [isBloqueado, setIsBloqueado] = useState(false);
+  const [isHideButton, setIsHideButton] = useState(false);
+
   // Estado para los datos de la tabla
   const [comprobantes, setComprobantes] = useState([
-    // Ejemplo de datos, puedes comenzar con un array vacío
+    // Ejemplo de datos
     //{ numero: '000001', cuenta: '12345678', auxiliar: '98765432', descripcion: 'Pago de servicios', debito: '100.00', credito: '' },
   ]);
   const [selectedItems, setSelectedItems] = useState([]);
   const cuentaInputRef = useRef(null);
-  const MAX_DESCRIPCION_LENGTH = 60;
+  const MAX_DESCRIPCION_LENGTH = 255;
   useEffect(() => {
-    console.log("isParamsConsulting updated 2: ", isParamsConsultingUpdate);
-  }, [isParamsConsultingUpdate]);
+    if(cookies.get('permisologia') != 2 && cookies.get('permisologia') != 4 && cookies.get('permisologia') != 5){
+      //setIsBloqueado(true);
+      handleLocked();
+    }
+  }, []);
+
+  
+  useEffect(() => {
+    if (comprobanteSeleccionado) {
+      cargarDatosComprobante(comprobanteSeleccionado);
+      if((cookies.get('permisologia') != 2 && cookies.get('permisologia') != 4 && cookies.get('permisologia') != 5) || comprobanteSeleccionado.estatusCbte == 2 || comprobanteSeleccionado.estatusCbte == 3){
+        //setIsBloqueado(true);
+        handleLocked();
+        setIsDisabled(true);
+        setIsHideButton(true);
+      }
+    } 
+  }, [comprobanteSeleccionado]);
   
   // Función para manejar selección/deselección de items
   const handleSelectItem = (numero) => {
@@ -236,10 +255,9 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
   
   // Función para agregar items a la tabla
   const handleAgregarItem = () => {
-    console.log("handleAgregarItem:",tipoCuenta)
     // Validar campos obligatorios
-    if (!cuenta || !tipoCuenta || !monto) {
-      show_alerta("Cuenta, tipo de cuenta y monto son obligatorios", "warning");
+    if (!cuenta || !tipoCuenta || !monto || !descripcion) {
+      show_alerta("Cuenta, tipo de cuenta, descripción y monto son obligatorios", "warning");
       return;
     }
 
@@ -261,8 +279,7 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
     // Agregar a la tabla
     setComprobantes([...comprobantes, nuevoComprobante]);
     setNextNumero(nextNumero + 1);
-    console.log("nuevoComprobante:",nuevoComprobante)
-    console.log("comprobantes:",comprobantes)
+    
     // Limpiar campos (excepto fecha)
     setCuenta('');
     setNroAuxiliar('');
@@ -394,6 +411,12 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
       if (response.data.status === "success") {
         show_alerta("Comprobante modificado con éxito", "success");
         
+        // 6. Valida el origen del comprobante (si proviene de una consulta o módulo de cont.)
+        console.log("comprobanteSeleccionado",comprobanteSeleccionado);
+        if(!comprobanteSeleccionado.isConsulting){
+          setCurrentComponent('moduloContabilidad');
+          return;
+        }
         // Redirigir a consulta
         const paramsUpdate = {
           update: 1,
@@ -454,13 +477,6 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
     return diferencia.toFixed(2);
   };
  
-  useEffect(() => {
-    console.log("useEff comprobanteSeleccionado",comprobanteSeleccionado)
-    if (comprobanteSeleccionado) {
-      cargarDatosComprobante(comprobanteSeleccionado);
-    }
-  }, [comprobanteSeleccionado]);
-
   // Función para formatear moneda
   const formatCurrency = (value) => {
     const number = typeof value === 'string' ? parseFloat(value) : value;
@@ -491,8 +507,6 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
       detalleOriginal: detalle
     }));
 
-    console.log("comprobante.comprobanteDet",comprobante.comprobanteDet)
-
     // 3. Actualizar estados
     setComprobantes(comprobantesFormateados);
     setNextNumero(comprobante.comprobanteDet.length + 1);
@@ -507,6 +521,12 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
 
   const handleRegresar = () => {
     
+    // 6. Valida el origen del comprobante (si proviene de una consulta o módulo de cont.)
+    if(comprobanteSeleccionado != null && !comprobanteSeleccionado.isConsulting){
+      setCurrentComponent('moduloContabilidad');
+      return;
+    }
+
     if (isConsulting){
       const paramsUpdate = {
         update:1,
@@ -529,225 +549,255 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
       setCurrentComponent('moduloContabilidad');
     }
   };
+
+  const handleLocked = () => {
+    var blockElement = document.querySelector('#registro-comprobantes');
+    const inputs = blockElement.querySelectorAll('input');
+    const checkboxs = blockElement.querySelectorAll('input[type="checkbox"]');
+    const buttons = blockElement.querySelectorAll('button');
+    const textareas = blockElement.querySelectorAll('textarea');
+    const buttonReturn = blockElement.querySelector('#button-return');
+    
+    textareas.forEach(textarea => textarea.disabled = true);
+    inputs.forEach(input => input.disabled = true);
+    checkboxs.forEach(checkbox => checkbox.disabled = true);
+    buttons.forEach(button => button.disabled = true);
+    buttonReturn.disabled = false;
+    blockElement.classList.add('disabled-block');
+  };
+
   return (
-    <div className="registro-comprobantes-container">
-      <div className="header">
-        <button className="regresar-button" onClick={() => handleRegresar()}>
-          <span className="icon">←</span> Regresar
-        </button>
-        <h2 className="titulo">
-          {isConsulting == false ?            
-            "Registro de Comprobantes"
-            :
-            "Modificar Comprobante"
-          }
-        </h2>
-      </div>
-
-      <div className="form-section">
-        <div className="form-row top-row" style={{borderBottom: "0.5px solid #ddd",paddingBottom: "20px"}}>
-          <div className="form-group fecha-valor">
-            <label htmlFor="fechaValor" style={{ fontWeight: "600",color: "#000"}}>Fecha Valor</label>
-            <div className="input-with-icon">
-              <input
-                type="date"
-                id="fechaValor"
-                placeholder="DD/MM/YYYY"
-                //value={fechaValor}
-                value={fechaValor.split('/').reverse().join('-')}
-                onChange={(e) => setFechaValor(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === 'Tab') {
-                    validarFechaValor();
-                  }
-                }}
-                /*onBlur={(e) => {
-                  if (e.key === 'Enter') {
-                    validarFechaValor();
-                  }
-                }}
-              */
-              />
-              <span className="icon">{isSearchingFecha ? <div className="mini-spinner"></div> : '📅'}</span>
-            </div>
-          </div>
-          <div className="acciones-top">
-            {isConsulting == false ? 
-              <button className="clean-button" onClick={handleLimpiar}>
-                <FaBroom style={{ marginRight: "0.5rem" }}/> Limpiar
-              </button> 
-              :
-              ""
-            }
-
-            {isConsulting == false ? 
-              <button className="import-button">
-                <CiImport  style={{ marginRight: "0.5rem",fontSize: "18px" }}/>  Importar
-              </button>            
-              :
-              ""
-            }
-
-            <button 
-              className="save-button" 
-              onClick={isConsulting ? handleModificar : handleGuardar}
-              disabled={isSpinnerModifying} // Deshabilitar durante la modificación
-            >
-              {isConsulting ? 
-                (isSpinnerModifying ? (
-                  <div className="spinner"></div>  // Mostrar spinner durante modificación
-                ) : (
-                  "Modificar Comprobante"
-                )) 
-                : 
-                (isSpinnerModifying ? (
-                  <div className="spinner"></div>  // Mostrar spinner durante modificación
-                ) : (
-                  "Guardar Comprobante"
-                )) 
-              }
-            </button>
-            
+    <div className="registro-comprobantes-container" id="registro-comprobantes">
+      {isBloqueado ? (
+        <div className="bloqueado-message">
+          <h2>Acceso Restringido</h2>
+          <p>No tiene permisos para acceder a esta funcionalidad.</p>
+        </div>
+      ) : (
+      <>
+        <div className="header">
+          <button className="regresar-button" onClick={() => handleRegresar()} id='button-return'>
+            <span className="icon">←</span> Regresar
+          </button>
+          <h2 className="titulo">
             {isConsulting == false ?            
-              <button className="new-voucher-button">Nuevo Comprobante</button>
+              "Registro de Comprobantes"
               :
-              ""
+              "Modificar Comprobante"
             }
-            {/*<button className="review-button">Enviar al Supervisor</button>*/}
-          </div>
+          </h2>
         </div>
 
-        <div className="form-row">
-          <div className="form-group auxiliar">
-            <label htmlFor="cuenta">Cuenta</label>
-            <div className="input-with-search">
+        <div className="form-section">
+          <div className="form-row top-row" style={{borderBottom: "0.5px solid #ddd",paddingBottom: "20px"}}>
+            <div className="form-group fecha-valor">
+              <label htmlFor="fechaValor" style={{ fontWeight: "600",color: "#000"}}>Fecha Valor</label>
+              <div className="input-with-icon">
+                <input
+                  type="date"
+                  id="fechaValor"
+                  placeholder="DD/MM/YYYY"
+                  //value={fechaValor}
+                  value={fechaValor.split('/').reverse().join('-')}
+                  onChange={(e) => setFechaValor(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === 'Tab') {
+                      validarFechaValor();
+                    }
+                  }}
+                  /*onBlur={(e) => {
+                    if (e.key === 'Enter') {
+                      validarFechaValor();
+                    }
+                  }}
+                */
+                />
+                <span className="icon">{isSearchingFecha ? <div className="mini-spinner"></div> : '📅'}</span>
+              </div>
+            </div>
+            <div className="acciones-top">
+              {isConsulting == false ? 
+                <button className="clean-button" onClick={handleLimpiar}>
+                  <FaBroom style={{ marginRight: "0.5rem" }}/> Limpiar
+                </button> 
+                :
+                ""
+              }
+
+              {isConsulting == false ? 
+                <button className="import-button">
+                  <CiImport  style={{ marginRight: "0.5rem",fontSize: "18px" }}/>  Importar
+                </button>            
+                :
+                ""
+              }
+
+              {!isHideButton ?
+                <button 
+                  className="save-button" 
+                  onClick={isConsulting ? handleModificar : handleGuardar}
+                  disabled={isSpinnerModifying} // Deshabilitar durante la modificación
+                >
+                  {isConsulting ? 
+                    (isSpinnerModifying ? (
+                      <div className="spinner"></div>  // Mostrar spinner durante modificación
+                    ) : (
+                      "Modificar Comprobante"
+                    )) 
+                    : 
+                    (isSpinnerModifying ? (
+                      <div className="spinner"></div>  // Mostrar spinner durante modificación
+                    ) : (
+                      "Guardar Comprobante"
+                    )) 
+                  }
+                </button>
+                : ''
+              }
+              
+              {isConsulting == false ?            
+                <button className="new-voucher-button">Nuevo Comprobante</button>
+                :
+                ""
+              }
+              {/*<button className="review-button">Enviar al Supervisor</button>*/}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group auxiliar">
+              <label htmlFor="cuenta">Cuenta</label>
+              <div className="input-with-search">
+                <input
+                  type="text"
+                  id="cuenta"
+                  value={cuenta}
+                  onChange={(e) => setCuenta(e.target.value)}
+                  disabled={isDisabled}
+                  ref={cuentaInputRef}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === 'Tab') {
+                      buscarCuentaPorAPI();
+                    }
+                  }}
+                />
+                <button className="search-button" disabled={isSearching} onClick={buscarCuentaPorAPI}>{isSearching ? <div className="mini-spinner"></div> : '🔍'}</button>
+
+              </div>
+            </div>
+            <div className="form-group col-md-6">
+              <label htmlFor="cuenta">Descripción</label>
+              <div className="input-with-search">
+                <input
+                  type="text"
+                  id="nombreCuenta"
+                  value={nombreCuenta}
+                  disabled="true"
+                  style={{maxWidth: "44rem"}}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group auxiliar">
+              <label htmlFor="auxiliar">Auxiliar</label>
+              <div className="input-with-search">
+                <input
+                  type="text"
+                  id="auxiliar"
+                  value={nroAuxiliar}
+                  onChange={(e) => setNroAuxiliar(e.target.value)}
+                  disabled={isDisabledAux}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === 'Tab') {
+                      buscarAux();
+                    }
+                  }}
+                />
+                <button className="search-button" disabled={isDisabledAux} onClick={buscarAux}>{isSearchingAux ? <div className="mini-spinner"></div> : '🔍'}</button>
+              </div>
+            </div>
+            <div className="form-group col-md-4">
+              <label htmlFor="nombreAux">Nombre</label>
+              <div className="input-with-search">
+                <input
+                  type="text"
+                  id="nombreAux"
+                  value={nombreAux}
+                  disabled="true"
+                />
+              </div>
+            </div>
+            <div className="form-group tipo-cuenta">
+              <label>Tipo de Cuenta</label>
+              <div className="checkbox-group">
+                <label>
+                  <input
+                    type="radio"
+                    name="tipoCuenta"
+                    value="Debito"
+                    checked={tipoCuenta === 'Debito'}
+                    onChange={(e) => setTipoCuenta(e.target.value)}
+                    disabled={isDisabled}
+                  />{' '}
+                  Débito
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="tipoCuenta"
+                    value="Credito"
+                    checked={tipoCuenta === 'Credito'}
+                    onChange={(e) => setTipoCuenta(e.target.value)}
+                    disabled={isDisabled}
+                  />{' '}
+                  Crédito
+                </label>
+              </div>
+            </div>
+
+            <div className="form-group monto">
+              <label htmlFor="monto">Monto</label>
               <input
-                type="text"
-                id="cuenta"
-                value={cuenta}
-                onChange={(e) => setCuenta(e.target.value)}
+                type="number"
+                id="monto"
+                value={monto}
+                onChange={(e) => setMonto(e.target.value)}
                 disabled={isDisabled}
-                ref={cuentaInputRef}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === 'Tab') {
-                    buscarCuentaPorAPI();
-                  }
-                }}
               />
-              <button className="search-button" disabled={isSearching} onClick={buscarCuentaPorAPI}>{isSearching ? <div className="mini-spinner"></div> : '🔍'}</button>
-
             </div>
           </div>
-          <div className="form-group col-md-6">
-            <label htmlFor="cuenta">Descripción</label>
-            <div className="input-with-search">
-              <input
-                type="text"
-                id="nombreCuenta"
-                value={nombreCuenta}
-                disabled="true"
-                style={{maxWidth: "44rem"}}
-              />
+
+          <div className="form-row description-row">
+            <div className="form-group full-width">
+              <label htmlFor="descripcion">Descripción</label>
+              <textarea
+                id="descripcion"
+                rows="4"
+                value={descripcion}
+                onChange={handleDescripcionChange}
+                maxLength={MAX_DESCRIPCION_LENGTH}
+                disabled={isDisabled}
+              ></textarea>
+              <span className="char-count">{descripcionLength}/{MAX_DESCRIPCION_LENGTH}</span>
             </div>
           </div>
         </div>
-
-        <div className="form-row">
-          <div className="form-group auxiliar">
-            <label htmlFor="auxiliar">Auxiliar</label>
-            <div className="input-with-search">
-              <input
-                type="text"
-                id="auxiliar"
-                value={nroAuxiliar}
-                onChange={(e) => setNroAuxiliar(e.target.value)}
-                disabled={isDisabledAux}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === 'Tab') {
-                    buscarAux();
-                  }
-                }}
-              />
-              <button className="search-button" disabled={isDisabledAux} onClick={buscarAux}>{isSearchingAux ? <div className="mini-spinner"></div> : '🔍'}</button>
-            </div>
+        {!isHideButton ?
+          <div className="actions-section">
+            <button className="save-button" onClick={handleAgregarItem} disabled={isDisabled}>Agregar Items</button>
+            <button className="delete-button" onClick={handleEliminarSeleccionados}>
+              <CiTrash style={{ marginRight: "0.5rem",fontSize: "18px" }}/> Eliminar
+            </button>
+            <button className="export-excel-button" onClick={handleExportarExcel} disabled={isDisabled}>
+              <CiExport style={{ marginRight: "0.5rem",fontSize: "18px" }}/> Exportar a Excel
+            </button>
           </div>
-          <div className="form-group col-md-4">
-            <label htmlFor="nombreAux">Nombre</label>
-            <div className="input-with-search">
-              <input
-                type="text"
-                id="nombreAux"
-                value={nombreAux}
-                disabled="true"
-              />
-            </div>
-          </div>
-          <div className="form-group tipo-cuenta">
-            <label>Tipo de Cuenta</label>
-            <div className="checkbox-group">
-              <label>
-                <input
-                  type="radio"
-                  name="tipoCuenta"
-                  value="Debito"
-                  checked={tipoCuenta === 'Debito'}
-                  onChange={(e) => setTipoCuenta(e.target.value)}
-                  disabled={isDisabled}
-                />{' '}
-                Débito
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="tipoCuenta"
-                  value="Credito"
-                  checked={tipoCuenta === 'Credito'}
-                  onChange={(e) => setTipoCuenta(e.target.value)}
-                  disabled={isDisabled}
-                />{' '}
-                Crédito
-              </label>
-            </div>
-          </div>
-
-          <div className="form-group monto">
-            <label htmlFor="monto">Monto</label>
-            <input
-              type="number"
-              id="monto"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-              disabled={isDisabled}
-            />
-          </div>
-        </div>
-
-        <div className="form-row description-row">
-          <div className="form-group full-width">
-            <label htmlFor="descripcion">Descripción</label>
-            <textarea
-              id="descripcion"
-              rows="4"
-              value={descripcion}
-              onChange={handleDescripcionChange}
-              maxLength={MAX_DESCRIPCION_LENGTH}
-              disabled={isDisabled}
-            ></textarea>
-            <span className="char-count">{descripcionLength}/{MAX_DESCRIPCION_LENGTH}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="actions-section">
-        <button className="save-button" onClick={handleAgregarItem} disabled={isDisabled}>Agregar Items</button>
-        <button className="delete-button" onClick={handleEliminarSeleccionados}>
-          <CiTrash style={{ marginRight: "0.5rem",fontSize: "18px" }}/> Eliminar
-        </button>
-        <button className="export-excel-button" onClick={handleExportarExcel} disabled={isDisabled}>
-          <CiExport style={{ marginRight: "0.5rem",fontSize: "18px" }}/> Exportar a Excel
-        </button>
-      </div>
-
+          : ''
+        }
+      </>
+      )}
       <div className="table-section">
         <table>
           <thead>
@@ -804,7 +854,7 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
       </div>
 
       <div className="table-footer">
-        <div className="pagination">1 / 20 &gt;</div>
+        <div className="pagination">{/*1 / 20 &gt;*/}</div>
         <div className="total-difference">
           <span>Diferencia</span>
           <input type="text" value={calcularDiferencia()} readOnly />

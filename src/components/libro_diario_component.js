@@ -18,9 +18,13 @@ const LibroDiario = () => {
   const [idCaho, setIdCaho] = useState(cookies.get('id_caho'));
   const [nombreCaho, setNombreCaho] = useState(cookies.get('nombreCaho'));
   const [isConsulting, setIsConsulting] = useState(false);
+  const [sectorCaho, seSectorCaho] = useState(cookies.get('sectorCaho'));
+  const [codigoCaho, setCodigoCaho] = useState(cookies.get('codigoCaho'));
+
   // Datos de ejemplo (simulando la respuesta de la API)
   useEffect(() => {
-    setLoading(true);
+    setLoading(false);
+    /*setLoading(true);
     try {
       const fetchData = async () => {
         const response = await fetch(
@@ -37,7 +41,7 @@ const LibroDiario = () => {
     } catch (err) {
       setError("Error al cargar los datos: " + err.message);
       setLoading(false);
-    }
+    }*/
   }, []);
 
   const convertToISO = (date) => {
@@ -352,61 +356,12 @@ const LibroDiario = () => {
     html2pdf().set(opt).from(clonedElement).save();
   };
 
-
-  /*
-  const handlePrint = () => {
-    // Clonar el elemento para modificar estilos solo para PDF
-    const element = document.getElementById('body-container');
-    const clonedElement = element.cloneNode(true);
-    
-    // Aplicar estilos específicos para PDF
-    clonedElement.style.width = '100%';
-    clonedElement.style.padding = '0';
-    clonedElement.style.boxShadow = 'none';
-    //clonedElement.style.marginLeft = '20px';
-    // Modificar estilos de la tabla para PDF
-    const tables = clonedElement.querySelectorAll('table');
-    tables.forEach(table => {
-      //table.style.marginLeft = '30px';
-      table.style.width = '100%';
-      table.style.minWidth = '0';
-      table.style.fontSize = '9pt';
-    });
-    
-    // Modificar celdas
-    const cells = clonedElement.querySelectorAll('th, td');
-    cells.forEach(cell => {
-      cell.style.padding = '5px 8px';
-      cell.style.whiteSpace = 'nowrap';
-    });
-    
-    // Modificar encabezados
-    const headers = clonedElement.querySelectorAll('th');
-    headers.forEach(header => {
-      header.style.fontSize = '10pt';
-    });
-
-    // Configuración de PDF
-    const opt = {
-      margin: [10, 10, 10, 1.5],
-      filename: 'libro_diario.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        width: 1123,  // Ancho A4 en píxeles (210mm * 96dpi/25.4)
-        windowWidth: 1200
-      },
-      jsPDF: { 
-        unit: 'mm', 
-        format: 'a4', 
-        orientation: 'landscape'  // Cambiar a horizontal
-      }
-    };
-
-    // Crear PDF
-    html2pdf().set(opt).from(clonedElement).save();
-  };*/
+  // Función para convertir formato YYYY-MM-DD a DD/MM/YYYY 
+  const convertToISO2 = (dateStr) => {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-');
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  };
 
   if (loading) {
     return (
@@ -527,11 +482,13 @@ const LibroDiario = () => {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div><strong>Caja:</strong> {nombreCaho}</div>
+            <div><strong>Sector:</strong> {sectorCaho == 0 ? 'Público' : 'Privado'}</div>
+            <div><strong>Número de Registro:</strong> {codigoCaho}</div>
             {fecha ?
-                <div className="print"><strong>Fecha seleccionada:</strong> {fecha} </div>
+                <div className="print"><strong>Fecha Reporte:</strong> {fecha} </div>
                 :
                 ''
-            }
+            }            
             
             {/* Fecha */}
             <div className="filtro-fecha no-print" style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>

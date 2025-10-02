@@ -21,6 +21,7 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [idCaho, setIdCaho] = useState(cookies.get('id_caho'));
+  const [isBloqueado, setIsBloqueado] = useState(false);
   
   // Estados para roles
   const [roles, setRoles] = useState([]); // Todos los roles disponibles
@@ -158,7 +159,12 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
   useEffect(() => {
     cargarUsuarios();
     cargarRoles();
-  }, [idCaho]);
+
+    if(cookies.get('permisologia') != 1){
+      setIsBloqueado(true);
+      setIsSubmitting(true);
+    }
+  }, []);
 
   // Función para cargar datos de usuario en el formulario para edición
   const cargarUsuarioParaEdicion = (usuario) => {
@@ -266,18 +272,19 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
   // Función para manejar el envío del formulario (crear o actualizar)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    //console.log("selectedRoles",selectedRoles);
+    //return false;
     if (validateForm()) {
       setIsSubmitting(true);
       setMessage({ type: '', text: '' });
       if (!editing) {
-        var valEmail = await checkEmail(email)
+        var valEmail = await checkEmail(email);
         if(!valEmail){
           setIsSubmitting(false);
           return false;
         }
 
-        var valCI = await checkCI(cedula)
+        var valCI = await checkCI(cedula);
         if(!valCI){
           setIsSubmitting(false);
           return false;
@@ -439,12 +446,30 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
   // Manejar cambio en la selección de roles
   const handleRoleChange = (e) => {
     const options = e.target.options;
+
+    console.log("options", options)
     const selectedValues = [];
     for (let i = 0; i < options.length; i++) {
       if (options[i].selected) {
         selectedValues.push(parseInt(options[i].value));
       }
     }
+    console.log(selectedValues)
+    setSelectedRoles(selectedValues);
+  };
+
+  const handleRoleClick = () => {
+    var options = document.getElementById('roles').options;
+    console.log("log:",document.getElementById('roles').options[0].selected)
+    console.log("log 2:",document.getElementById('roles').options.length)
+    const selectedValues = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        console.log("selectedValues 0",options[i].value)
+        selectedValues.push(parseInt(options[i].value));
+      }
+    }
+    console.log("selectedValues",selectedValues)
     setSelectedRoles(selectedValues);
   };
 
@@ -469,49 +494,54 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
       <div id="form-section" className="form-section">
         <form onSubmit={handleSubmit}>
           {/* Fila superior con botones de acción */}
-          <div className="form-row top-row" style={{borderBottom: "0.5px solid #ddd", paddingBottom: "20px"}}>
-            <div className="form-group fecha-valor">
-              <label style={{ fontWeight: "600", color: "#000" }}>
-                {editing ? "Editando Usuario" : "Datos Personales"}
-              </label>
-            </div>
-            
-            <div className="acciones-top">
-              <button 
-                type="button" 
-                className="clean-button" 
-                onClick={handleLimpiar}
-                disabled={isSubmitting}
-              >
-                Limpiar
-              </button>
+
+          {!isBloqueado ?
+            <div className="form-row top-row" style={{borderBottom: "0.5px solid #ddd", paddingBottom: "20px"}}>
+              <div className="form-group fecha-valor">
+                <label style={{ fontWeight: "600", color: "#000" }}>
+                  {editing ? "Editando Usuario" : "Datos Personales"}
+                </label>
+              </div>
               
-              <button 
-                type="submit" 
-                className="save-button"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <div className="spinner"></div>
-                ) : editing ? (
-                  "Modificar Usuario"
-                ) : (
-                  "Guardar Usuario"
-                )}
-              </button>
-              
-              {editing && (
+              <div className="acciones-top">
                 <button 
                   type="button" 
-                  className="cancel-button"
+                  className="clean-button" 
                   onClick={handleLimpiar}
                   disabled={isSubmitting}
                 >
-                  Cancelar Edición
+                  Limpiar
                 </button>
-              )}
+                
+                <button 
+                  type="submit" 
+                  className="save-button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <div className="spinner"></div>
+                  ) : editing ? (
+                    "Modificar Usuario"
+                  ) : (
+                    "Guardar Usuario"
+                  )}
+                </button>
+                
+                {editing && (
+                  <button 
+                    type="button" 
+                    className="cancel-button"
+                    onClick={handleLimpiar}
+                    disabled={isSubmitting}
+                  >
+                    Cancelar Edición
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+           :
+           ''
+          }
 
           {/* Fila 1: Cédula, Nombre, Apellido */}
           <div className="form-row session_form_1">
@@ -631,6 +661,7 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
                 id="roles"
                 value={selectedRoles}
                 onChange={handleRoleChange}
+                /*onClick={handleRoleClick}*/
                 className={`roles-select ${errors.roles ? 'input-error' : ''}`}
                 size={4}
               >
@@ -743,7 +774,7 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
                 <td><FechaFormateada fecha={usuario.fechaNac} /></td>
                 <td className="actions-cell">
                   <button 
-                    className="edit-button"
+                    className={`${!isBloqueado ? 'edit-button ' : 'bloquear'}`}
                     onClick={() => cargarUsuarioParaEdicion(usuario)}
                     disabled={isSubmitting}
                   >
@@ -758,7 +789,8 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
                   </button>*/}
 
                   <button 
-                    className={`status-button ${EstatusEnum(usuario.estatus).toLowerCase()}`}
+                    className={`status-button ${EstatusEnum(usuario.estatus).toLowerCase()} ${!isBloqueado ? '' : 'bloquear'}`}
+                    disabled={isSubmitting}
                     onClick={() => cambiarEstatus(usuario.idUsuario)}>
                     {usuario.estatus === 1 ? 
                       <FaToggleOn size={20} /> : 

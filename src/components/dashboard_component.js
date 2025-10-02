@@ -515,7 +515,7 @@ const DashboardComponent = ({ setCurrentComponent }) => {
           Dashboard de Contabilidad
         </h2>
         
-        <div className="actions-bar">
+        <div className="actions-bar" style={{display:"none"}}>
           <div className="action-card">
             <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
             <span>Carga de Comprobantes</span>

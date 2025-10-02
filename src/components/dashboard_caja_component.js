@@ -37,6 +37,9 @@ const Dashboard = () => {
   const [selectedYear] = useState(2025);
   const [usuario ] = useState(cookies.get('email'));
   const [idCaho, setIdCaho] = useState(cookies.get('id_caho'));
+  const [token, setToken] = useState(cookies.get('token'));
+  const [nombreCaho, setNombreCaho] = useState(cookies.get('nombreCaho'));
+  const [nombreRol, setNombreRol] = useState(cookies.get('nombreRol'));
   const [recentMovements, setRecentMovements] = useState([]);
 
   
@@ -61,14 +64,15 @@ const Dashboard = () => {
         params: {
           idCaho: idCaho,
           dias: 5
-        }
+        },
+        headers: token ? { Authorization: `${token}` } : {}
       });
       console.log(response)
       if (response.data.data && response.data.data.length > 0) {
-        console.log(response.data.data);
+        console.log("ultimos-movimientos",response.data.data);
         cargarDatosComprobante(response.data.data);
       } else {
-        show_alerta("No se encontraron resultados", "info");
+        //show_alerta("No se encontraron resultados", "info");
       }
     } catch (err) {
       console.error('Error al consultar estado res:', err);
@@ -163,11 +167,11 @@ const Dashboard = () => {
           <p className="current-date">{formatCurrentDate()}</p>
           <div className="welcome-section">
             <h2 className="welcome-title">
-              Bienvenido, Caja de Ahorro del Ministerio de Economía y Finanzas
+              Bienvenido, {nombreCaho}
             </h2>
             <div className="user-info">
               <span className="user-icon">👤</span>
-              <span className="user-details">{ usuario } / Supervisor</span>
+              <span className="user-details">{ usuario } / { nombreRol }</span>
             </div>
           </div>
         </header>

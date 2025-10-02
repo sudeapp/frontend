@@ -1,5 +1,7 @@
 
-.form-group {
+.lista-comprobantes-container {
+  
+  .form-group {
     display: flex;
     flex-direction: column;
   }
@@ -324,3 +326,4 @@
       border-radius: 4px;
       padding: 8px;
     }
+}

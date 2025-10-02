@@ -130,10 +130,14 @@ const Login = () => {
                 cookies.set('id_caho', respuesta.id_caho, { path: "/" });
                 cookies.set('nombreCaho', respuesta.nombreCaho, { path: "/" });
                 cookies.set('idPlanContable', respuesta.idPlanContable, { path: "/" });
+                cookies.set('codigoCaho', respuesta.codigoCaho, { path: "/" });
+                cookies.set('sectorCaho', respuesta.sectorCaho, { path: "/" });
                 cookies.set('usuario_caja', respuesta.usuarioCaja, { path: "/" });
-                cookies.set('permisologia', respuesta.permisologia, { path: "/" });
-
-                //console.log("response.data.data: ",response.data.data);
+                cookies.set('permisologia',respuesta.permisologia, { path: "/" });
+                cookies.set('token', respuesta.token, { path: "/" });
+                cookies.set('nombreRol', respuesta.nombreRol, { path: "/" });
+                
+                console.log("response.data.data: ",response.data.data);
                 window.location.href = "./home";
             } else {
                 setErrorMessage('El usuario o la contraseña no son correctos');

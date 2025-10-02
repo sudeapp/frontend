@@ -37,7 +37,7 @@ const formatCurrency = (value) => {
     + ',' + decimalPart;
 };
 
-const EstadoResultado = ({ setCurrentComponent }) => {
+const BalanceComprobacion = ({ setCurrentComponent }) => {
   const baseUrl = config.API_BASE_URL;
   const cookies = new Cookies();
   
@@ -114,7 +114,7 @@ const EstadoResultado = ({ setCurrentComponent }) => {
   };
 
    //Valida fecha valor
-  const validarMesCierre = async () => {
+   const validarMesCierre = async () => {
     if (!fecha) {
       show_alerta("Por favor, ingrese una fecha valor", "warning");
       return;
@@ -167,8 +167,9 @@ const EstadoResultado = ({ setCurrentComponent }) => {
     var fecha1 = convertToISO(fecha);
     console.log(fecha1)
     var tipo = estatusBusqueda == 1 ? true : false;
+
     try {
-      const response = await axios.get(`${baseUrl}/api/cajas-ahorro/estado-resultado`, {
+      const response = await axios.get(`${baseUrl}/api/cajas-ahorro/balance-comprobacion`, {
         params: {
           idCaho: idCaho,
           fecha: fecha1,
@@ -186,7 +187,7 @@ const EstadoResultado = ({ setCurrentComponent }) => {
     } catch (err) {
       console.error('Error al consultar estado res:', err);
       setError('Error al cargar los datos. Por favor intente nuevamente.');
-      show_alerta("Error al consultar datos de estado resultado", "error");
+      show_alerta("Error al consultar datos de balance de comprobación", "error");
     } finally {
       setLoading(false);
       setIsConsulting(false);
@@ -307,7 +308,6 @@ const EstadoResultado = ({ setCurrentComponent }) => {
         <h2 className="titulo">Estado de Resultado</h2>
         </div>*/}
 
-
       {/* Botón para imprimir PDF */}
       <div style={{ textAlign: 'right', marginBottom: '10px' }}>
         <button  className="no-print"
@@ -342,30 +342,29 @@ const EstadoResultado = ({ setCurrentComponent }) => {
            padding: '20px' 
         }}>
         {/* Encabezado */}
-        <div style={{
-          padding: '20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '0.5px solid #e9ecef'
-        }}>
-          <div>
-            <h1 style={{ margin: '0', fontSize: '28px' }}>Estado de Resultado</h1>
-            <p style={{ margin: '5px 0 0', opacity: '0.8' }}>Registros contables </p>
+          <div style={{
+            padding: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderBottom: '0.5px solid #e9ecef'
+          }}>
+            <div>
+              <h1 style={{ margin: '0', fontSize: '28px' }}>Balance de Comprobación</h1>
+              <p style={{ margin: '5px 0 0', opacity: '0.8' }}> (PRELIMINAR)</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div><strong>Caja:</strong> {nombreCaho}</div>
+              <div><strong>Sector:</strong> {sectorCaho == 0 ? 'Público' : 'Privado'}</div>
+              <div><strong>Número de Registro:</strong> {codigoCaho}</div>
+              {fecha ?
+                  <div className="print"><strong>Fecha Reporte:</strong> {convertToISO2(fecha)} </div>
+                  :
+                  ''
+              }
+              
+            </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div><strong>Caja:</strong> {nombreCaho}</div>
-            <div><strong>Sector:</strong> {sectorCaho == 0 ? 'Público' : 'Privado'}</div>
-            <div><strong>Número de Registro:</strong> {codigoCaho}</div>
-            {fecha ?
-                <div className="print"><strong>Fecha Reporte:</strong> {convertToISO2(fecha)} </div>
-                :
-                ''
-            }            
-          </div>
-        </div>
-          
-        
 
         {/* Sección de Búsqueda/Filtros */}
         <section className="search-filters-section no-print">
@@ -497,6 +496,7 @@ const EstadoResultado = ({ setCurrentComponent }) => {
             </table>
           </div>
         </section>
+
         {/* Pie de Tabla / Paginación 
         <footer className="table-footer">
           <div className="pagination-info">
@@ -511,11 +511,11 @@ const EstadoResultado = ({ setCurrentComponent }) => {
               &gt;
             </button>
           </div>
-        </footer>
-        */}
-        </div>
+        </footer>*/}
+      </div>
+
     </div>
   );
 };
 
-export default EstadoResultado;
+export default BalanceComprobacion;

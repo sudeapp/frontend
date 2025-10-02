@@ -2,8 +2,20 @@ import React, { useEffect,useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboardList, faSearch, faListAlt, faShieldAlt, faEye,faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { FaBars} from 'react-icons/fa';
+import axios from 'axios';
+import config from '../config';
+import Cookies from 'universal-cookie';
+import { show_alerta, show_alerta2 } from '../functions';
 
-const Informe = ({ setCurrentComponent }) => {
+const ModuloCierre = ({ setCurrentComponent }) => {
+  const cookies = new Cookies();
+  const baseUrl = config.API_BASE_URL;
+  const [userId, setUserId] = useState(cookies.get('idUsuario'));
+  const [token, setToken] = useState(cookies.get('token'));
+  const [idCaho, setIdCaho] = useState(cookies.get('id_caho'));
+  const [isSpinnerMensual, setIsSpinnerMensual] = useState(false);
+  const [isSpinnerAnual, setIsSpinnerAnual] = useState(false);
+
   const css = `
   .accounting-module {
     font-family: sans-serif;
@@ -30,7 +42,7 @@ const Informe = ({ setCurrentComponent }) => {
       cursor: pointer;
       transition: all 0.3s ease;
       flex: 1;
-      min-width: 180px;
+      max-width: 180px;
     }
 
     .action-card:hover {
@@ -134,6 +146,78 @@ const Informe = ({ setCurrentComponent }) => {
       setCurrentComponent(currents);
     };
 
+    const handleCierreMensual = async () => {  
+      setIsSpinnerMensual(true);
+  
+      try {
+        let params = {
+          idCaho: idCaho,
+          idUsuario:userId
+        };
+  
+        var response = await axios.get(
+          `${baseUrl}/api/cajas-ahorro/cierre-mensual`,
+          {
+            params: params,
+            headers: {
+              Authorization: `${token}`,
+            }
+          }
+        );
+        console.log(response);
+        if (response.status === 200 && response.data.data === true) {
+          show_alerta('Cierre mensual realizado exitosamente' , 'success');
+        }else{
+          show_alerta('Cierre mensual no fue realizado, intente más tarde' , 'error');
+        }
+      } catch (error) {
+        if (error.response?.status === 400) {
+          show_alerta(error.response.data, 'error');
+        } else {
+          show_alerta('Error al realizar cierre mensual', 'error');
+        }
+      } finally {
+        setIsSpinnerMensual(false);
+  
+      }
+    };
+
+    const handleCierreAnual = async () => {
+  
+      setIsSpinnerAnual(true);
+  
+      try {
+        let params = {
+          idCaho: idCaho,
+          idUsuario:userId
+        };
+  
+        var response = await axios.get(
+          `${baseUrl}/api/cajas-ahorro/cierre-anual`,
+          {
+            params: params,
+            headers: {
+              Authorization: `${token}`,
+            }
+          }
+        );
+  
+        if (response.status === 200 && response.data.data === true) {
+          show_alerta('Cierre anual realizado exitosamente' , 'success');
+        }else{
+          show_alerta('Cierre anual no fue realizado, intente más tarde' , 'error');
+        }
+      } catch (error) {
+        if (error.response?.status === 400) {
+          show_alerta(error.response.data, 'error');
+        } else {
+          show_alerta('Error al realizar cierre anual', 'error');
+        }
+      } finally {
+        setIsSpinnerAnual(false);
+      }
+    };
+  
   return (
     <>
     <style>{css}</style>
@@ -141,33 +225,26 @@ const Informe = ({ setCurrentComponent }) => {
 
       <h2 className="dashboard-title">
           <FontAwesomeIcon icon={faChartPie} className="dashboard-title-icon" />
-          Reportes de Contabilidad
+          Cierre Contable
       </h2>
       <div className="actions-bar">
-        <div className="action-card" onClick={() => handleChangeComponent('libroDiario')}>
+        <div className="action-card" onClick={() => handleCierreMensual()}>
           <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
-          <span>Libro Diario</span>
           
+          {isSpinnerMensual ? (
+            <div className="spinner"></div>
+          ) : (
+            <span>Cierre Mensual</span>
+          )}
         </div>
-        <div className="action-card" onClick={() => handleChangeComponent('listadoComprobante')}>
-          <FontAwesomeIcon icon={faSearch} className="action-icon" />
-          <span style={{textAlign: "center"}}> Listado de Comprobantes</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('estadoResultado')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span>Estado Resultado</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('balanceComprobacion')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span style={{textAlign: "center"}}>Balance de Comprobación</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('balanceGeneral')}>
-          <FontAwesomeIcon icon={faListAlt} className="action-icon" />
-          <span>Situación Financiera</span>
-        </div>
-        <div className="action-card" onClick={() => handleChangeComponent('consultaVpc')}>
-          <FontAwesomeIcon icon={faShieldAlt} className="action-icon" />
-          <span>Plan Contable</span>
+
+        <div className="action-card" onClick={() => handleCierreAnual()}>
+          <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
+          {isSpinnerAnual ? (
+            <div className="spinner"></div>
+          ) : (
+            <span>Cierre del Ejercicio</span>
+          )}
         </div>
       </div>
 
@@ -175,4 +252,4 @@ const Informe = ({ setCurrentComponent }) => {
   )
 }
 
-export default Informe;
+export default ModuloCierre;
