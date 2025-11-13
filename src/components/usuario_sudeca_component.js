@@ -682,7 +682,7 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
           <div className="form-row">
             <div className="form-group auxiliar">
               <label htmlFor="password">
-                Contraseña {editing ? '(Opcional)' : '*'}
+                Contraseña {editing ? '' : '*'}
               </label>
               <div className="input-with-search">
                 <input
@@ -698,7 +698,7 @@ const UsuarioSudeca = ({ setCurrentComponent }) => {
             </div>
             <div className="form-group auxiliar">
               <label htmlFor="confirmPassword">
-                Repita contraseña {editing ? '(Opcional)' : '*'}
+                Repita contraseña {editing ? '' : '*'}
               </label>
               <div className="input-with-search">
                 <input

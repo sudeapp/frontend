@@ -76,7 +76,7 @@ const Dashboard = () => {
       }
     } catch (err) {
       console.error('Error al consultar estado res:', err);
-      show_alerta("Error al consultar datos de estado resultado", "error");
+      //show_alerta("Error al consultar datos de estado resultado", "error");
     } finally {
 
     }
@@ -162,7 +162,7 @@ const Dashboard = () => {
         {/* Header */}
         <header className="dashboard-header">
           <h1 className="main-title">
-            Bienvenido al Sistema Integral de Gestión Administrativa, Contable y Financiera de las Cajas de Ahorro
+            Bienvenido al Sistema Administrativo, Contable y Financiero para las Cajas de Ahorro
           </h1>
           <p className="current-date">{formatCurrentDate()}</p>
           <div className="welcome-section">

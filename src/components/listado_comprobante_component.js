@@ -342,7 +342,7 @@ const ListadoComprobante = () => {
     // Configuración optimizada de PDF
     const opt = {
       margin: [5, 5, 5, 5], // Márgenes reducidos
-      filename: 'libro_diario.pdf',
+      filename: 'listado_comprobantes.pdf',
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
         scale: 2,  // Escala reducida
@@ -610,7 +610,7 @@ const ListadoComprobante = () => {
                       <strong style={{marginLeft:'1rem'}}>Estatus:</strong> {estatusCte}
                     </div>
                     <div>
-                      <strong>Fecha:</strong> {fecha}
+                      <strong>Fecha:</strong> {convertToISO2(fecha)}
                     </div>
                   </div>
                   

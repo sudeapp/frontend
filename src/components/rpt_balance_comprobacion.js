@@ -233,7 +233,7 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
     });
   };
   
-  const handlePrint = () => {
+  /*const handlePrint = () => {
     const element = document.getElementById('body-container');
     const clonedElement = element.cloneNode(true);
     
@@ -272,7 +272,7 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
     // Configuración optimizada de PDF
     const opt = {
       margin: [5, 5, 5, 5], // Márgenes reducidos
-      filename: 'libro_diario.pdf',
+      filename: 'balance_comprobacion.pdf',
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
         scale: 2,  // Escala reducida
@@ -291,6 +291,60 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
     };
   
     // Crear PDF
+    html2pdf().set(opt).from(clonedElement).save();
+  };*/
+
+  const handlePrint = () => {
+    const element = document.getElementById('body-container');
+    const clonedElement = element.cloneNode(true);
+    
+    // Remover elementos no necesarios en PDF
+    const noPrintElements = clonedElement.querySelectorAll('.no-print');
+    noPrintElements.forEach(el => el.remove());
+    
+    // Aplicar estilos generales al contenedor
+    clonedElement.style.width = '100%';
+    clonedElement.style.padding = '0';
+    clonedElement.style.margin = '0';
+    clonedElement.style.boxShadow = 'none';
+    clonedElement.style.backgroundColor = 'white';
+    
+    // Optimizar la tabla principal
+    const mainTable = clonedElement.querySelector('table');
+    if (mainTable) {
+      mainTable.style.width = '100%';
+      mainTable.style.minWidth = '0';
+      mainTable.style.fontSize = '8pt';
+      mainTable.style.tableLayout = 'auto';
+      
+      // Estilos para todas las celdas
+      const allCells = mainTable.querySelectorAll('th, td');
+      allCells.forEach(cell => {
+        cell.style.padding = '4px 3px';
+        cell.style.fontSize = '8pt';
+        cell.style.lineHeight = '1.2';
+        cell.style.wordWrap = 'break-word';
+        cell.style.overflowWrap = 'break-word';
+      });
+    }
+  
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: 'balance_comprobacion.pdf',
+      image: { type: 'jpeg', quality: 0.8 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: 1200
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4',
+        orientation: 'landscape'
+      }
+    };
+  
     html2pdf().set(opt).from(clonedElement).save();
   };
 
@@ -351,7 +405,7 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
           }}>
             <div>
               <h1 style={{ margin: '0', fontSize: '28px' }}>Balance de Comprobación</h1>
-              <p style={{ margin: '5px 0 0', opacity: '0.8' }}> (PRELIMINAR)</p>
+              {/*<p style={{ margin: '5px 0 0', opacity: '0.8' }}> (PRELIMINAR)</p>*/}
             </div>
             <div style={{ textAlign: 'right' }}>
               <div><strong>Caja:</strong> {nombreCaho}</div>

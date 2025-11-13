@@ -523,8 +523,8 @@ const RegistroUsuario = ({ setCurrentComponent }) => {
                   onChange={(e) => setCedula(e.target.value)}
                   placeholder="Ingrese cédula"
                   className={errors.cedula ? 'input-error' : ''}
-                  disabled={editing}
-                  readOnly={editing} // Cédula no editable en modo edición
+                  //disabled={editing}
+                  //readOnly={editing} // Cédula no editable en modo edición
                 />
               </div>
               {errors.cedula && <div className="error-message">{errors.cedula}</div>}
@@ -649,7 +649,7 @@ const RegistroUsuario = ({ setCurrentComponent }) => {
           <div className="form-row">
             <div className="form-group auxiliar">
               <label htmlFor="password">
-                Contraseña {editing ? '(Opcional)' : '*'}
+                Contraseña {editing ? '' : '*'}
               </label>
               <div className="input-with-search">
                 <input
@@ -665,7 +665,7 @@ const RegistroUsuario = ({ setCurrentComponent }) => {
             </div>
             <div className="form-group auxiliar">
               <label htmlFor="confirmPassword">
-                Repita contraseña {editing ? '(Opcional)' : '*'}
+                Repita contraseña {editing ? '' : '*'}
               </label>
               <div className="input-with-search">
                 <input

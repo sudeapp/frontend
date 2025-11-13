@@ -14,6 +14,7 @@ import DashboardComponent from '../components/dashboard_component';
 import DashboardCaja from '../components/dashboard_caja_component';
 import Informe from '../components/informe_component';
 import LibroDiario from '../components/libro_diario_component';
+import LibroMayor from '../components/libro_mayor_component';
 import ListadoComprobante from '../components/listado_comprobante_component';
 import EstadoResultado from '../components/rpt_estado_resultado';
 import ConsultaVpc from '../components/consulta_vpc';
@@ -151,6 +152,8 @@ const Home = () => {
           return <ConsultaVpc setCurrentComponent={setCurrentComponent}/>; 
       case 'libroDiario':
           return <LibroDiario setCurrentComponent={setCurrentComponent}/>;  
+      case 'libroMayor':
+        return <LibroMayor setCurrentComponent={setCurrentComponent}/>;  
       case 'listadoComprobante':
           return <ListadoComprobante setCurrentComponent={setCurrentComponent}/>;    
       case 'estadoResultado':
@@ -289,6 +292,7 @@ const Home = () => {
                   }} 
                   className={`nav-link ${currentComponent === 'informe' ||
                                           currentComponent === 'libroDiario' || 
+                                          currentComponent === 'libroMayor' || 
                                           currentComponent === 'estadoResultado' || 
                                           currentComponent === 'balanceComprobacion' || 
                                           currentComponent === 'balanceGeneral' || 

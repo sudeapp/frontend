@@ -271,7 +271,7 @@ const EstadoResultado = ({ setCurrentComponent }) => {
     // Configuración optimizada de PDF
     const opt = {
       margin: [5, 5, 5, 5], // Márgenes reducidos
-      filename: 'libro_diario.pdf',
+      filename: 'estado_resultado.pdf',
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
         scale: 2,  // Escala reducida

@@ -147,7 +147,10 @@ const Informe = ({ setCurrentComponent }) => {
         <div className="action-card" onClick={() => handleChangeComponent('libroDiario')}>
           <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
           <span>Libro Diario</span>
-          
+        </div>
+        <div className="action-card" onClick={() => handleChangeComponent('libroMayor')}>
+          <FontAwesomeIcon icon={faClipboardList} className="action-icon" />
+          <span>Libro Mayor</span>
         </div>
         <div className="action-card" onClick={() => handleChangeComponent('listadoComprobante')}>
           <FontAwesomeIcon icon={faSearch} className="action-icon" />

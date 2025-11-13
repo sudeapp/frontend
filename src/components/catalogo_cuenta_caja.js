@@ -241,6 +241,7 @@ const CatalogoCuentaCaja = ({ setCurrentComponent }) => {
             return;
         }
    
+        console.log("resCodigoContable.es_valido",resCodigoContable.es_valido)
         /*const auxiliarTipo = {
             idTaux : idTipoAux || null,
         }*/
@@ -249,7 +250,8 @@ const CatalogoCuentaCaja = ({ setCurrentComponent }) => {
             cuenta: cuenta,
             descripcion: descripcion,
             auxiliarTipo: idTipoAux != 0 ? { idTaux : idTipoAux } : null,
-            movimiento: movimiento === "1",
+            //movimiento: movimiento === "1",
+            movimiento: true,
             nivel: resCodigoContable.nivel_cuenta,
             longitud: resCodigoContable.longitud_cuenta,
             idCuentaAsc: resCodigoContable.id_cuenta_padre,
@@ -258,6 +260,8 @@ const CatalogoCuentaCaja = ({ setCurrentComponent }) => {
             monetaria: false
         };
     
+        console.log("DATASSSSSSS",formData)
+        //return false;
         // Crear nueva cuenta
         response = await axios.post(
           `${baseUrl}/api/plan-catalogo/save`,
@@ -269,6 +273,8 @@ const CatalogoCuentaCaja = ({ setCurrentComponent }) => {
             }
           }
         );
+
+        console.log("DATASSSSSSS response",response)
       }
  
       if (response.status === 200 || response.status === 201) {
@@ -370,7 +376,7 @@ const CatalogoCuentaCaja = ({ setCurrentComponent }) => {
             </div>
           </div>
          
-          <div className="form-group" >
+          {/*<div className="form-group" >
             <label htmlFor="movimiento">¿Imputable?</label>
             <div className='input-with-icon' style={{width:"97%"}}>
               <select
@@ -384,7 +390,7 @@ const CatalogoCuentaCaja = ({ setCurrentComponent }) => {
                 <option value="0">No</option>
               </select>
             </div>
-          </div>
+          </div>*/}
         </div>
       </div>
 

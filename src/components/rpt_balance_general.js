@@ -231,7 +231,7 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
         }
     });
   };
-  
+  /*
   const handlePrint = () => {
     const element = document.getElementById('body-container');
     const clonedElement = element.cloneNode(true);
@@ -271,7 +271,7 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
     // Configuración optimizada de PDF
     const opt = {
       margin: [5, 5, 5, 5], // Márgenes reducidos
-      filename: 'libro_diario.pdf',
+      filename: 'balance_general.pdf',
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
         scale: 2,  // Escala reducida
@@ -290,6 +290,147 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
     };
   
     // Crear PDF
+    html2pdf().set(opt).from(clonedElement).save();
+  };*/
+
+  /*
+  const handlePrint = () => {
+    const element = document.getElementById('body-container');
+    const clonedElement = element.cloneNode(true);
+    
+    // Remover elementos no necesarios en PDF
+    const noPrintElements = clonedElement.querySelectorAll('.no-print');
+    noPrintElements.forEach(el => el.remove());
+    
+    // Aplicar estilos generales al contenedor
+    clonedElement.style.width = '100%';
+    clonedElement.style.padding = '0';
+    clonedElement.style.margin = '0';
+    clonedElement.style.boxShadow = 'none';
+    clonedElement.style.backgroundColor = 'white';
+    
+    // Optimizar la tabla principal
+    const mainTable = clonedElement.querySelector('table');
+    if (mainTable) {
+      mainTable.style.width = '100%';
+      mainTable.style.minWidth = '0';
+      mainTable.style.fontSize = '8pt';
+      mainTable.style.tableLayout = 'auto';
+      
+      // Estilos para todas las celdas
+      const allCells = mainTable.querySelectorAll('th, td');
+      allCells.forEach(cell => {
+        cell.style.padding = '4px 3px';
+        cell.style.fontSize = '8pt';
+        cell.style.lineHeight = '1.2';
+        cell.style.wordWrap = 'break-word';
+        cell.style.overflowWrap = 'break-word';
+      });
+    }
+  
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: 'balance_general.pdf',
+      image: { type: 'jpeg', quality: 0.8 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: 1200
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4',
+        orientation: 'landscape'
+      }
+    };
+  
+    html2pdf().set(opt).from(clonedElement).save();
+  };*/
+
+  const handlePrint = () => {
+    const element = document.getElementById('body-container');
+    const clonedElement = element.cloneNode(true);
+    
+    // Remover elementos no necesarios en PDF
+    const noPrintElements = clonedElement.querySelectorAll('.no-print');
+    noPrintElements.forEach(el => el.remove());
+    
+    // Aplicar estilos generales al contenedor
+    clonedElement.style.width = '100%';
+    clonedElement.style.padding = '0';
+    clonedElement.style.margin = '0';
+    clonedElement.style.boxShadow = 'none';
+    clonedElement.style.backgroundColor = 'white';
+    
+    // Optimizar la tabla principal
+    const mainTable = clonedElement.querySelector('table');
+    if (mainTable) {
+      mainTable.style.width = '100%';
+      mainTable.style.minWidth = '0';
+      mainTable.style.fontSize = '8pt';
+      mainTable.style.tableLayout = 'auto';
+      
+      // Estilos para todas las celdas
+      const allCells = mainTable.querySelectorAll('th, td');
+      allCells.forEach(cell => {
+        cell.style.padding = '4px 3px';
+        cell.style.fontSize = '8pt';
+        cell.style.lineHeight = '1.2';
+        cell.style.wordWrap = 'break-word';
+        cell.style.overflowWrap = 'break-word';
+      });
+  
+      // FORZAR ALINEACIÓN A LA DERECHA PARA COLUMNAS NUMÉRICAS
+      const numericHeaders = mainTable.querySelectorAll('th.text-right');
+      numericHeaders.forEach(header => {
+        header.style.textAlign = 'right';
+        header.style.paddingRight = '8px';
+      });
+  
+      // Encontrar todas las filas y aplicar alineación derecha a las celdas numéricas
+      const allRows = mainTable.querySelectorAll('tr');
+      allRows.forEach(row => {
+        // Celda 3: Saldo Anterior (índice 3)
+        if (row.cells[3]) {
+          row.cells[3].style.textAlign = 'right';
+          row.cells[3].style.paddingRight = '8px';
+        }
+        // Celda 4: Débitos mes (índice 4)
+        if (row.cells[4]) {
+          row.cells[4].style.textAlign = 'right';
+          row.cells[4].style.paddingRight = '8px';
+        }
+        // Celda 5: Crédito mes (índice 5)
+        if (row.cells[5]) {
+          row.cells[5].style.textAlign = 'right';
+          row.cells[5].style.paddingRight = '8px';
+        }
+        // Celda 6: Saldo Actual (índice 6)
+        if (row.cells[6]) {
+          row.cells[6].style.textAlign = 'right';
+          row.cells[6].style.paddingRight = '8px';
+        }
+      });
+    }
+  
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: 'balance_general.pdf',
+      image: { type: 'jpeg', quality: 0.8 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: 1200
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4',
+        orientation: 'landscape'
+      }
+    };
+  
     html2pdf().set(opt).from(clonedElement).save();
   };
 
@@ -350,7 +491,7 @@ const BalanceComprobacion = ({ setCurrentComponent }) => {
         }}>
           <div>
             <h1 style={{ margin: '0', fontSize: '28px' }}>Estado de Situación Financiera</h1>
-            <p style={{ margin: '5px 0 0', opacity: '0.8' }}> (PRELIMINAR)</p>
+            {/*<p style={{ margin: '5px 0 0', opacity: '0.8' }}> (PRELIMINAR)</p>*/}
           </div>
           <div style={{ textAlign: 'right' }}>
             <div><strong>Caja:</strong> {nombreCaho}</div>

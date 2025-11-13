@@ -181,8 +181,8 @@ const Login = () => {
                         <img src={logoSudeca} alt="Logo de Sudeca" />
                     </div>
 
-                    <h2>Bienvenidos a SICONCAV</h2>
-                    <p>Sistema de contabilidad para las Cajas de Ahorro Venezolanas</p>
+                    <h2>Bienvenidos a</h2>
+                    <p>Sistema Administrativo, Contable y Financiero para las Cajas de Ahorro</p>
 
                     <form className="login-form">
                         {/* Campo de Email con icono */}

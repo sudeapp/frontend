@@ -566,6 +566,27 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
     blockElement.classList.add('disabled-block');
   };
 
+  // Función para calcular el total de débitos
+  const calcularTotalDebito = () => {
+    let total = 0;
+    comprobantes.forEach(item => {
+      if (item.debito) {
+        total += parseCurrency(item.debito);
+      }
+    });
+    return formatCurrency(total);
+  };
+
+  // Función para calcular el total de créditos
+  const calcularTotalCredito = () => {
+    let total = 0;
+    comprobantes.forEach(item => {
+      if (item.credito) {
+        total += parseCurrency(item.credito);
+      }
+    });
+    return formatCurrency(total);
+  };
   return (
     <div className="registro-comprobantes-container" id="registro-comprobantes">
       {isBloqueado ? (
@@ -757,7 +778,7 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
               </div>
             </div>
 
-            <div className="form-group monto">
+            {/*<div className="form-group monto">
               <label htmlFor="monto">Monto</label>
               <input
                 type="number"
@@ -766,7 +787,32 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
                 onChange={(e) => setMonto(e.target.value)}
                 disabled={isDisabled}
               />
-            </div>
+                </div>*/}
+              <div className="form-group monto">
+                <label htmlFor="monto">Monto</label>
+                <input
+                  type="number"
+                  id="monto"
+                  value={monto}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Validar que sea positivo
+                    if (value === '' || (parseFloat(value) >= 0 && !isNaN(parseFloat(value)))) {
+                      setMonto(value);
+                    }
+                  }}
+                  min="0"
+                  step="0.01"
+                  disabled={isDisabled}
+                  placeholder="0.00"
+                  onKeyDown={(e) => {
+                    // Prevenir teclas de negativo
+                    if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </div>
           </div>
 
           <div className="form-row description-row">
@@ -835,6 +881,7 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
                 </td>
               </tr>
             ))}
+          
             {/* Rellenar con filas vacías si hay menos de 10 para mantener la altura */}
             {Array.from({ length: Math.max(0, 10 - comprobantes.length) }).map((_, i) => (
               <tr key={`empty-${i}`}>
@@ -849,6 +896,21 @@ const RegistroComprobantes = ({ setCurrentComponent,comprobanteSeleccionado,setI
                 </td>
               </tr>
             ))}
+              {/* Fila de totales */}
+              {comprobantes.length > 0 && (
+              <tr className="total-row">
+                <td colSpan="4" style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                  TOTALES:
+                </td>
+                <td style={{ fontWeight: 'bold' }}>
+                  {calcularTotalDebito()}
+                </td>
+                <td style={{ fontWeight: 'bold' }}>
+                  {calcularTotalCredito()}
+                </td>
+                <td></td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
